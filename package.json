@@ -1,0 +1,21 @@
+{
+  "name": "mist-agent-desktop",
+  "version": "1.0.0",
+  "description": "The Crewdle Mist Desktop Agent",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "electron ."
+  },
+  "author": "Crewdle Technologies",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "electron": "^29.1.4",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@crewdle/mist-connector-webrtc-node": "^1.0.2",
+    "@crewdle/web-sdk": "^0.1.9"
+  }
+}

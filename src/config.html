@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crewdle Mist Agent</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #18191A;
+      color: #d3d5dd;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      box-sizing: border-box;
+      background-color: #242526;
+      border: 1px solid #d3d5dd;
+      color: #d3d5dd;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #FF5322;
+      border-radius: 50px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Configurations</h1>
+  <form id="config-form">
+    <div class="form-group">
+      <label for="vendor-id">Vendor ID</label>
+      <input type="text" id="vendor-id" name="vendor-id">
+    </div>
+    <div class="form-group">
+      <label for="access-token">Access Token</label>
+      <input type="text" id="access-token" name="access-token">
+    </div>
+    <div class="form-group">
+      <label for="secret-key">Secret Key</label>
+      <input type="password" id="secret-key" name="secret-key">
+    </div>
+    <div class="form-group">
+      <label for="agent-id">Agent ID</label>
+      <input type="text" id="agent-id" name="agent-id">
+    </div>
+    <button type="submit">Save</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.api.getConfigData().then((config) => {
+        if (config) {
+          document.getElementById('vendor-id').value = config.vendorId || '';
+          document.getElementById('access-token').value = config.accessToken || '';
+          document.getElementById('secret-key').value = config.secretKey || '';
+          document.getElementById('agent-id').value = config.agentId || '';
+        }
+      });
+    });
+
+    document.getElementById('config-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const data = {
+        vendorId: document.getElementById('vendor-id').value,
+        accessToken: document.getElementById('access-token').value,
+        secretKey: document.getElementById('secret-key').value,
+        agentId: document.getElementById('agent-id').value
+      };
+
+      window.api.sendConfigData(data);
+    });
+  </script>
+</body>
+</html>
