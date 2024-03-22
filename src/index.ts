@@ -61,11 +61,8 @@ async function loadSDK(): Promise<void> {
     peerConnectionConnector: WebRTCNodePeerConnectionConnector,
   }, config.secretKey);
   
-  const key = `${config.agentId}${Math.random()}`;
-  const user = await sdk.authenticateUser({
-    id: key,
-    displayName: key,
-    email: `${key}@crewdle.com`,
+  const user = await sdk.authenticateAgent({
+    groupId: config.agentId,
   });
   console.log(user);
 }

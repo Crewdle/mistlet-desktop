@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "electron ."
+    "start": "npm run build && electron ."
   },
   "author": "Crewdle Technologies",
   "license": "ISC",
