@@ -1,5 +1,5 @@
 {
-  "name": "mist-agent-desktop",
+  "name": "@crewdle/mist-agent-desktop",
   "version": "1.0.0",
   "description": "The Crewdle Mist Desktop Agent",
   "main": "src/index.js",
