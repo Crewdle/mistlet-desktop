@@ -4,7 +4,7 @@ module.exports = () => {
   configs = {
     entry: './src/index.ts',
     target: 'electron-main',
-    devtool: 'inline-source-map',
+    devtool: false,
     module: {
       rules: [
         {
@@ -23,7 +23,7 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     optimization: {
-      minimize: false,
+      minimize: true,
     },
   };
 
