@@ -2,22 +2,25 @@
   "name": "@crewdle/mist-agent-desktop",
   "version": "1.0.0",
   "description": "The Crewdle Mist Desktop Agent",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "npm run build && electron ."
+    "build": "webpack build --mode=production",
+    "serve": "electron .",
+    "start": "npm run build && npm run serve"
   },
   "author": "Crewdle Technologies",
   "license": "ISC",
   "devDependencies": {
-    "@types/electron": "^1.6.10",
-    "electron": "^29.1.4",
-    "typescript": "^5.4.2"
+    "@crewdle/mist-connector-webrtc-node": "^1.0.4",
+    "electron": "^29.1.5",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-in-memory-db": "^1.0.0",
-    "@crewdle/mist-connector-virtual-fs": "^1.0.0",
-    "@crewdle/mist-connector-webrtc-node": "^1.0.2",
+    "@crewdle/mist-connector-in-memory-db": "^1.0.1",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.1",
     "@crewdle/web-sdk": "^0.2.2"
   }
 }

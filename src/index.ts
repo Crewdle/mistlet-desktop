@@ -59,11 +59,16 @@ async function loadSDK(): Promise<void> {
     return;
   }
 
-  sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
-    peerConnectionConnector: WebRTCNodePeerConnectionConnector,
-    keyValueDatabaseConnector: InMemoryDatabaseConnector,
-    objectStoreConnector: VirtualFSObjectStoreConnector,
-  }, config.secretKey);
+  try {
+    sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
+      peerConnectionConnector: WebRTCNodePeerConnectionConnector,
+      keyValueDatabaseConnector: InMemoryDatabaseConnector,
+      objectStoreConnector: VirtualFSObjectStoreConnector,
+    }, config.secretKey);
+  } catch (err) {
+    console.error('Error initializing SDK', err);
+    return;
+  }
   
   const user = await sdk.authenticateAgent({
     groupId: config.agentId,
@@ -72,6 +77,7 @@ async function loadSDK(): Promise<void> {
 }
 
 function saveConfig(newConfig: Config) {
+  console.log('Saving', configPath, newConfig);
   fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), (err) => {
     if (err) {
       console.error('Error writing config file', err);
@@ -85,6 +91,7 @@ function saveConfig(newConfig: Config) {
     return;
   }
   loadSDK();
+  configWindow?.close();
 }
 
 function loadConfig() {
