@@ -15,7 +15,9 @@
     "typescript": "^5.4.2"
   },
   "dependencies": {
+    "@crewdle/mist-connector-in-memory-db": "^1.0.0",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.0",
     "@crewdle/mist-connector-webrtc-node": "^1.0.2",
-    "@crewdle/web-sdk": "^0.1.9"
+    "@crewdle/web-sdk": "^0.2.2"
   }
 }

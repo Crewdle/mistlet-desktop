@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
+import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
+import { VirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
@@ -59,6 +61,8 @@ async function loadSDK(): Promise<void> {
 
   sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
     peerConnectionConnector: WebRTCNodePeerConnectionConnector,
+    keyValueDatabaseConnector: InMemoryDatabaseConnector,
+    objectStoreConnector: VirtualFSObjectStoreConnector,
   }, config.secretKey);
   
   const user = await sdk.authenticateAgent({
