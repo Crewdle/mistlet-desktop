@@ -112,7 +112,7 @@ function saveConfig(newConfig: Config) {
 
   config = newConfig;
   if (sdk) {
-    return;
+    sdk.close();
   }
   loadSDK();
   configWindow?.close();
@@ -143,13 +143,13 @@ async function loadConfig() {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   if (process.platform === 'darwin') {
     app.dock.hide();
   }
 
   createTray();
-  loadConfig();
+  await loadConfig();
   loadSDK();
 });
 
