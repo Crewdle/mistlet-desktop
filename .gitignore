@@ -4,3 +4,5 @@ package-lock.json
 src/index.js*
 src/*.node
 data.enc/
+dist/
+Mistlet-*/

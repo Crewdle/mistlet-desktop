@@ -5,15 +5,34 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack build --mode=production",
+    "installer": "electron-builder build --win --mac --linux",
+    "package": "electron-packager . Mistlet --platform=all --arch=x64 --overwrite",
+    "rebuild": "electron-rebuild -f",
     "serve": "electron .",
     "start": "npm run build && npm run serve"
   },
   "author": "Crewdle Technologies",
   "license": "ISC",
+  "build": {
+    "appId": "com.crewdle.mistlet",
+    "productName": "Mistlet",
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
   "devDependencies": {
     "@crewdle/mist-connector-webrtc-node": "^1.0.4",
     "@crewdle/web-sdk-types": "^1.0.5",
+    "@electron/rebuild": "^3.6.0",
     "electron": "^29.1.5",
+    "electron-builder": "^24.13.3",
     "node-loader": "^2.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.2",
@@ -24,6 +43,7 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.1",
     "@crewdle/mist-connector-virtual-fs": "^1.0.1",
     "@crewdle/web-sdk": "^0.2.2",
+    "@electron/packager": "^18.3.1",
     "bufferutil": "^4.0.8",
     "keytar": "^7.9.0",
     "systeminformation": "^5.22.6",
