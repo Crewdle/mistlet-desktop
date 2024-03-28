@@ -3,6 +3,7 @@ import fs from 'fs';
 import si from 'systeminformation';
 import keytar from 'keytar';
 import crypto from 'crypto';
+import { v4 } from 'uuid';
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
@@ -81,9 +82,16 @@ async function loadSDK(): Promise<void> {
     console.error('Error initializing SDK', err);
     return;
   }
+
+  let uuid = await keytar.getPassword('crewdle', 'mist-agent-desktop-uuid');
+  if (!uuid) {
+    uuid = v4();
+    await keytar.setPassword('crewdle', 'mist-agent-desktop-uuid', uuid);
+  }
   
   const user = await sdk.authenticateAgent({
     groupId: config.agentId,
+    id: uuid,
   });
   console.log(user);
 
