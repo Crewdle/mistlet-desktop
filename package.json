@@ -24,8 +24,10 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.1",
     "@crewdle/mist-connector-virtual-fs": "^1.0.1",
     "@crewdle/web-sdk": "^0.2.2",
+    "bufferutil": "^4.0.8",
     "keytar": "^7.9.0",
     "systeminformation": "^5.22.6",
+    "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.1"
   }
 }
