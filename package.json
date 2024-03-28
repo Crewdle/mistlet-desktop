@@ -2,7 +2,7 @@
   "name": "@crewdle/mist-agent-desktop",
   "version": "1.0.0",
   "description": "The Crewdle Mist Desktop Agent",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "webpack build --mode=production",
     "serve": "electron .",
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@crewdle/mist-connector-webrtc-node": "^1.0.4",
     "electron": "^29.1.5",
+    "node-loader": "^2.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.2",
     "webpack": "^5.91.0",
@@ -21,6 +22,8 @@
   "dependencies": {
     "@crewdle/mist-connector-in-memory-db": "^1.0.1",
     "@crewdle/mist-connector-virtual-fs": "^1.0.1",
-    "@crewdle/web-sdk": "^0.2.2"
+    "@crewdle/web-sdk": "^0.2.2",
+    "keytar": "^7.9.0",
+    "systeminformation": "^5.22.6"
   }
 }

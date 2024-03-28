@@ -1,5 +1,8 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'path';
+import fs from 'fs';
+import si from 'systeminformation';
+import keytar from 'keytar';
+import crypto from 'crypto';
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
@@ -7,17 +10,26 @@ import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db'
 import { VirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 
 const configPath = path.join(app.getPath('userData'), 'config.json');
+const algorithm = 'aes-256-gcm';
+const iv = crypto.randomBytes(16);
 
 let tray: Tray | null = null;
 let configWindow: BrowserWindow | null = null;
 let config: Config | null = null;
 let sdk: SDK | null = null;
+let secretKey: Buffer | null = null;
 
 interface Config {
   vendorId: string;
   accessToken: string;
   secretKey: string;
   agentId: string;
+}
+
+interface EncryptedConfig {
+  content: string;
+  tag: string;
+  iv: string;
 }
 
 function createConfigWindow(): void {
@@ -74,11 +86,23 @@ async function loadSDK(): Promise<void> {
     groupId: config.agentId,
   });
   console.log(user);
+
+  const cpu = await si.cpu();
+  console.log(cpu);
+
+  const mem = await si.mem();
+  console.log(mem);
+
+  const gpu = await si.graphics();
+  console.log(gpu);
+
+  const sto = await si.fsSize();
+  console.log(sto);
 }
 
 function saveConfig(newConfig: Config) {
-  console.log('Saving', configPath, newConfig);
-  fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), (err) => {
+  const encryptedConfig = encrypt(JSON.stringify(newConfig));
+  fs.writeFile(configPath, JSON.stringify(encryptedConfig), (err) => {
     if (err) {
       console.error('Error writing config file', err);
     } else {
@@ -94,23 +118,39 @@ function saveConfig(newConfig: Config) {
   configWindow?.close();
 }
 
-function loadConfig() {
+async function loadConfig() {
   try {
-    config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const keytarSecret = await keytar.getPassword('crewdle', 'mist-agent-desktop');
+    if (keytarSecret) {
+      secretKey = Buffer.from(keytarSecret, 'hex');
+    }
+  } catch (err) {
+  }
+
+  try {
+    if (!secretKey) {
+      secretKey = crypto.randomBytes(32);
+      await keytar.setPassword('crewdle', 'mist-agent-desktop', secretKey.toString('hex'));
+    }
+    const encryptedConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    const decryptedConfig = decrypt(encryptedConfig);
+    config = JSON.parse(decryptedConfig);
   } catch (err) {
     console.error('Error reading config file', err);
+    config = null;
     createConfigWindow();
     return null;
   }
 }
 
 app.whenReady().then(() => {
-  createTray();
-  loadConfig();
-  loadSDK();
   if (process.platform === 'darwin') {
     app.dock.hide();
   }
+
+  createTray();
+  loadConfig();
+  loadSDK();
 });
 
 app.on('window-all-closed', () => {
@@ -132,3 +172,33 @@ ipcMain.on('save-config-data', (event, data: any) => {
 ipcMain.handle('get-config-data', async (event) => {
   return config;
 });
+
+function encrypt(text: string): EncryptedConfig {
+  if (!secretKey) {
+    throw new Error('Secret key not found');
+  }
+
+  const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const authTag = cipher.getAuthTag();
+
+  return {
+    content: encrypted,
+    tag: authTag.toString('hex'),
+    iv: iv.toString('hex'),
+  };
+};
+
+const decrypt = (encrypted: EncryptedConfig): string => {
+  if (!secretKey) {
+    throw new Error('Secret key not found');
+  }
+
+  const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(encrypted.iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(encrypted.tag, 'hex'));
+  let decrypted = decipher.update(encrypted.content, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return decrypted;
+};

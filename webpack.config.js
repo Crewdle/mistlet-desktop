@@ -12,6 +12,10 @@ module.exports = () => {
           use: 'ts-loader',
           exclude: /node_modules/
         },
+        {
+          test: /\.node$/,
+          loader: 'node-loader',
+        },
       ],
     },
     resolve: {
@@ -20,7 +24,7 @@ module.exports = () => {
     },
     output: {
       filename: 'index.js',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'src'),
     },
     optimization: {
       minimize: true,
