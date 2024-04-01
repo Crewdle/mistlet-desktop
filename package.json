@@ -4,33 +4,48 @@
   "description": "The Crewdle Mist Desktop Agent",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack build --mode=production",
-    "installer": "electron-builder build --win --mac --linux",
-    "package": "electron-packager . Mistlet --platform=all --arch=x64 --overwrite",
-    "rebuild": "electron-rebuild -f",
-    "serve": "electron .",
-    "start": "npm run build && npm run serve"
+    "build-app": "webpack build --mode=production",
+    "build-package": "electron-builder build --win --mac --linux",
+    "serve": "NODE_ENV=development electron ."
   },
+  "postinstall": "electron-builder install-app-deps",
   "author": "Crewdle Technologies",
   "license": "ISC",
   "build": {
     "appId": "com.crewdle.mistlet",
     "productName": "Mistlet",
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "src/assets/logo-256x256.ico"
     },
     "mac": {
       "target": "dmg",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "src/assets/logo-256x256.icns"
     },
     "linux": {
-      "target": "AppImage"
-    }
+      "target": "AppImage",
+      "icon": "src/assets"
+    },
+    "files": [
+      "src/**/*.js",
+      "src/**/*.html",
+      "src/assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "./node_modules/keytar/build/Release/",
+        "to": "resources/",
+        "filter": [
+          "*.node"
+        ]
+      }
+    ]
   },
   "devDependencies": {
-    "@crewdle/mist-connector-webrtc-node": "^1.0.4",
     "@crewdle/web-sdk-types": "^1.0.5",
-    "@electron/rebuild": "^3.6.0",
     "electron": "^29.1.5",
     "electron-builder": "^24.13.3",
     "node-loader": "^2.0.0",
@@ -41,10 +56,11 @@
   },
   "dependencies": {
     "@crewdle/mist-connector-in-memory-db": "^1.0.1",
-    "@crewdle/mist-connector-virtual-fs": "^1.0.1",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.2",
+    "@crewdle/mist-connector-webrtc-node": "^1.0.4",
     "@crewdle/web-sdk": "^0.2.2",
-    "@electron/packager": "^18.3.1",
     "bufferutil": "^4.0.8",
+    "electron-log": "^5.1.2",
     "keytar": "^7.9.0",
     "systeminformation": "^5.22.6",
     "utf-8-validate": "^6.0.3",

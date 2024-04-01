@@ -5,10 +5,15 @@ import keytar from 'keytar';
 import crypto from 'crypto';
 import { v4 } from 'uuid';
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
+import log from 'electron-log';
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
-import { VirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
+import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
+import { IAuthAgent } from '@crewdle/web-sdk-types';
+
+log.transports.file.fileName = 'mistlet.log';
+log.transports.file.level = 'debug';
 
 const configPath = path.join(app.getPath('userData'), 'config.json');
 const algorithm = 'aes-256-gcm';
@@ -56,19 +61,27 @@ function createConfigWindow(): void {
 }
 
 function createTray(): void {
-  tray = new Tray('assets/logo16x16.png');
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Configurations', click: createConfigWindow },
-    { type: 'separator' },
-    { label: 'Quit', role: 'quit' }
-  ]);
+  try {
+    const iconPath = path.join(__dirname, 'assets/logo16x16.png');
+    tray = new Tray(iconPath);
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Crewdle Mistlet', enabled: false},
+      { type: 'separator'},
+      { label: 'Configurations', click: createConfigWindow },
+      { type: 'separator' },
+      { label: 'Quit', role: 'quit' }
+    ]);
 
-  tray.setToolTip('Crewdle Mist Agent');
-  tray.setContextMenu(contextMenu);
+    tray.setToolTip('Crewdle Mist Agent');
+    tray.setContextMenu(contextMenu);
+  } catch (err) {
+    log.error('Error creating tray', err);
+  }
 }
 
 async function loadSDK(): Promise<void> {
   if (!config) {
+    log.error('Configuration not found');
     return;
   }
 
@@ -76,45 +89,56 @@ async function loadSDK(): Promise<void> {
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
       keyValueDatabaseConnector: InMemoryDatabaseConnector,
-      objectStoreConnector: VirtualFSObjectStoreConnector,
+      objectStoreConnector: getVirtualFSObjectStoreConnector({
+        baseFolder: app.getPath('userData'),
+      }),
     }, config.secretKey);
   } catch (err) {
-    console.error('Error initializing SDK', err);
+    log.error('Error initializing SDK', err);
     return;
   }
+  log.info('SDK initialized successfully');
 
   let uuid = await keytar.getPassword('crewdle', 'mist-agent-desktop-uuid');
   if (!uuid) {
     uuid = v4();
     await keytar.setPassword('crewdle', 'mist-agent-desktop-uuid', uuid);
   }
+  log.info('UUID', uuid);
   
-  const user = await sdk.authenticateAgent({
-    groupId: config.agentId,
-    id: uuid,
-  });
-  console.log(user);
+  let user: IAuthAgent;
+  try {
+    user = await sdk.authenticateAgent({
+      groupId: config.agentId,
+      id: uuid,
+    });
+    log.info('Agent authenticated successfully');
+  } catch (err) {
+    log.error('Error authenticating agent', err);
+    return;
+  }
+  log.info(user);
 
   const cpu = await si.cpu();
-  console.log(cpu);
+  log.info(cpu);
 
   const mem = await si.mem();
-  console.log(mem);
+  log.info(mem);
 
   const gpu = await si.graphics();
-  console.log(gpu);
+  log.info(gpu);
 
   const sto = await si.fsSize();
-  console.log(sto);
+  log.info(sto);
 }
 
 function saveConfig(newConfig: Config) {
   const encryptedConfig = encrypt(JSON.stringify(newConfig));
   fs.writeFile(configPath, JSON.stringify(encryptedConfig), (err) => {
     if (err) {
-      console.error('Error writing config file', err);
+      log.error('Error writing config file', err);
     } else {
-      console.log('Configuration saved successfully');
+      log.info('Configuration saved successfully');
     }
   });
 
@@ -133,6 +157,7 @@ async function loadConfig() {
       secretKey = Buffer.from(keytarSecret, 'hex');
     }
   } catch (err) {
+    log.error('Error reading secret key from keytar', err);
   }
 
   try {
@@ -144,20 +169,28 @@ async function loadConfig() {
     const decryptedConfig = decrypt(encryptedConfig);
     config = JSON.parse(decryptedConfig);
   } catch (err) {
-    console.error('Error reading config file', err);
+    log.error('Error reading config file', err);
     config = null;
     createConfigWindow();
     return null;
   }
+
+  log.info('Configuration loaded successfully');
 }
 
 app.whenReady().then(async () => {
+  log.info('Starting Crewdle Mistlet Desktop');
+
+  log.info('Creating tray');
+  createTray();
   if (process.platform === 'darwin') {
     app.dock.hide();
   }
 
-  createTray();
+  log.info('Loading configuration');
   await loadConfig();
+
+  log.info('Loading SDK');
   loadSDK();
 });
 
@@ -210,3 +243,7 @@ const decrypt = (encrypted: EncryptedConfig): string => {
 
   return decrypted;
 };
+
+process.on('uncaughtException', (error) => {
+  log.error('Unhandled Exception', error);
+});

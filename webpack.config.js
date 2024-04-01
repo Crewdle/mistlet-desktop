@@ -5,6 +5,9 @@ module.exports = () => {
     entry: './src/index.ts',
     target: 'electron-main',
     devtool: false,
+    externals: {
+      'keytar': 'commonjs keytar'
+    },
     module: {
       rules: [
         {
@@ -27,7 +30,7 @@ module.exports = () => {
       path: path.resolve(__dirname, 'src'),
     },
     optimization: {
-      minimize: true,
+      minimize: false,
     },
   };
 
