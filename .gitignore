@@ -6,3 +6,4 @@ src/*.node
 data.enc/
 dist/
 Mistlet-*/
+.env

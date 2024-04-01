@@ -13,7 +13,7 @@
   "license": "ISC",
   "build": {
     "appId": "com.crewdle.mistlet",
-    "productName": "Mistlet",
+    "productName": "Crewdle Mistlet",
     "win": {
       "target": "nsis",
       "icon": "src/assets/logo-256x256.ico"
@@ -21,7 +21,15 @@
     "mac": {
       "target": "dmg",
       "category": "public.app-category.utilities",
-      "icon": "src/assets/logo-256x256.icns"
+      "icon": "src/assets/logo-256x256.icns",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "identity": "Technologies Crewdle Inc. (H6U877W956)"
+    },
+    "dmg": {
+      "sign": false
     },
     "linux": {
       "target": "AppImage",
@@ -42,10 +50,13 @@
           "*.node"
         ]
       }
-    ]
+    ],
+    "afterSign": "./notarize.js"
   },
   "devDependencies": {
     "@crewdle/web-sdk-types": "^1.0.5",
+    "@electron/notarize": "^2.3.0",
+    "dotenv": "^16.4.5",
     "electron": "^29.1.5",
     "electron-builder": "^24.13.3",
     "node-loader": "^2.0.0",
