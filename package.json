@@ -51,7 +51,13 @@
         ]
       }
     ],
-    "afterSign": "./notarize.js"
+    "afterSign": "./notarize.js",
+    "publish": {
+      "provider": "github",
+      "repo": "Crewdle/mist-agent-desktop",
+      "owner": "vlamanna",
+      "private": true
+    }
   },
   "devDependencies": {
     "@crewdle/web-sdk-types": "^1.0.5",
@@ -72,6 +78,7 @@
     "@crewdle/web-sdk": "^0.2.2",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
+    "electron-updater": "^6.1.8",
     "keytar": "^7.9.0",
     "systeminformation": "^5.22.6",
     "utf-8-validate": "^6.0.3",

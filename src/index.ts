@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { v4 } from 'uuid';
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
@@ -181,6 +182,8 @@ async function loadConfig() {
 app.whenReady().then(async () => {
   log.info('Starting Crewdle Mistlet Desktop');
 
+  autoUpdater.checkForUpdatesAndNotify();
+
   log.info('Creating tray');
   createTray();
   if (process.platform === 'darwin') {
@@ -246,4 +249,13 @@ const decrypt = (encrypted: EncryptedConfig): string => {
 
 process.on('uncaughtException', (error) => {
   log.error('Unhandled Exception', error);
+});
+
+autoUpdater.on('update-available', () => {
+  console.log('Update available.');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  console.log('Update downloaded; will install now');
+  autoUpdater.quitAndInstall();
 });
