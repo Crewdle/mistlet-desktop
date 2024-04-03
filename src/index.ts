@@ -11,7 +11,7 @@ import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
-import { IAuthAgent } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -105,32 +105,51 @@ async function loadSDK(): Promise<void> {
     uuid = v4();
     await keytar.setPassword('crewdle', 'mist-agent-desktop-uuid', uuid);
   }
-  log.info('UUID', uuid);
+  log.info('Agent authenticating', uuid);
   
   let user: IAuthAgent;
   try {
     user = await sdk.authenticateAgent({
       groupId: config.agentId,
       id: uuid,
+    }, async () => {
+      const cpu = await si.cpu();
+      const currentLoad = await si.currentLoad();
+      const memory = await si.mem();
+      const gpu = await si.graphics();
+      const storage = await si.fsSize();
+      let gpuCores = gpu.controllers[0].cores ?? 1;
+      if (typeof gpuCores === 'string') {
+        gpuCores = parseInt(gpuCores, 10);
+      }
+
+      const agentCapacity: IAgentCapacity = {
+        cpu: {
+          cores: cpu.cores,
+          load: currentLoad.currentLoad,
+        },
+        gpu: {
+          cores: gpuCores,
+          load: gpu.controllers[0].utilizationGpu ?? 0,
+        },
+        memory: {
+          total: memory.total,
+          available: memory.available,
+        },
+        storage: {
+          total: storage[0].size,
+          available: storage[0].available,
+        },
+      };
+
+      log.info('Reporting agent capacity', agentCapacity);
+      return agentCapacity;
     });
     log.info('Agent authenticated successfully');
   } catch (err) {
     log.error('Error authenticating agent', err);
     return;
   }
-  log.info(user);
-
-  const cpu = await si.cpu();
-  log.info(cpu);
-
-  const mem = await si.mem();
-  log.info(mem);
-
-  const gpu = await si.graphics();
-  log.info(gpu);
-
-  const sto = await si.fsSize();
-  log.info(sto);
 }
 
 function saveConfig(newConfig: Config) {
