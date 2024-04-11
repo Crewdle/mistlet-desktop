@@ -6,7 +6,8 @@ module.exports = () => {
     target: 'electron-main',
     devtool: false,
     externals: {
-      'keytar': 'commonjs keytar'
+      'keytar': 'commonjs keytar',
+      '@crewdle/mist-connector-webrtc-node': 'commonjs @crewdle/mist-connector-webrtc-node',
     },
     module: {
       rules: [
@@ -22,7 +23,7 @@ module.exports = () => {
       ],
     },
     resolve: {
-      extensions: ['.ts', '.js'],
+      extensions: ['.ts', '.js', '.node'],
       modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     },
     output: {

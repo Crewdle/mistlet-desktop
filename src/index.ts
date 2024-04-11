@@ -4,9 +4,11 @@ import si from 'systeminformation';
 import keytar from 'keytar';
 import crypto from 'crypto';
 import { v4 } from 'uuid';
+
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
+
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';

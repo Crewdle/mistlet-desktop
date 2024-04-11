@@ -6,7 +6,7 @@
   "scripts": {
     "build-app": "webpack build --mode=production",
     "build-package": "electron-builder build --win --mac --linux",
-    "rebuild": "electron-rebuild -f -w keytar",
+    "rebuild": "electron-rebuild -f",
     "serve": "electron ."
   },
   "postinstall": "electron-builder install-app-deps",
@@ -64,6 +64,7 @@
     "@crewdle/web-sdk-types": "^1.0.7",
     "@electron/notarize": "^2.3.0",
     "@electron/rebuild": "^3.6.0",
+    "@types/semver": "^7.5.8",
     "dotenv": "^16.4.5",
     "electron": "^29.1.5",
     "electron-builder": "^24.13.3",
@@ -75,13 +76,14 @@
   },
   "dependencies": {
     "@crewdle/mist-connector-in-memory-db": "^1.0.1",
-    "@crewdle/mist-connector-virtual-fs": "^1.0.2",
-    "@crewdle/mist-connector-webrtc-node": "^1.0.4",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.3",
+    "@crewdle/mist-connector-webrtc-node": "^1.0.8",
     "@crewdle/web-sdk": "^0.2.2",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
     "keytar": "^7.9.0",
+    "node-datachannel": "https://github.com/murat-dogan/node-datachannel",
     "systeminformation": "^5.22.6",
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.1"
