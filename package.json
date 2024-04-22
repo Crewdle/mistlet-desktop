@@ -10,31 +10,68 @@
     "serve": "electron ."
   },
   "postinstall": "electron-builder install-app-deps",
-  "author": "Crewdle Technologies",
+  "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
   "license": "ISC",
   "build": {
     "appId": "com.crewdle.mistlet",
     "productName": "Crewdle Mistlet",
+    "copyright": "Copyright © 2024 Crewdle",
+    "beforePack": "./beforePack.js",
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "src/assets/logo-256x256.ico"
     },
     "mac": {
-      "target": "dmg",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
       "category": "public.app-category.utilities",
       "icon": "src/assets/logo-256x256.icns",
       "entitlements": "entitlements.mac.plist",
       "entitlementsInherit": "entitlements.mac.plist",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
-      "identity": "Technologies Crewdle Inc. (H6U877W956)"
+      "identity": "Technologies Crewdle Inc. (H6U877W956)",
+      "notarize": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "src/assets"
     },
     "dmg": {
       "sign": false
     },
-    "linux": {
-      "target": "AppImage",
-      "icon": "src/assets"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "files": [
       "src/**/*.js",
@@ -46,6 +83,13 @@
     "extraResources": [
       {
         "from": "./node_modules/keytar/build/Release/",
+        "to": "resources/",
+        "filter": [
+          "*.node"
+        ]
+      },
+      {
+        "from": "./node_modules/node-datachannel/build/Release/",
         "to": "resources/",
         "filter": [
           "*.node"
@@ -75,15 +119,15 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-in-memory-db": "^1.0.1",
-    "@crewdle/mist-connector-virtual-fs": "^1.0.3",
-    "@crewdle/mist-connector-webrtc-node": "^1.0.8",
-    "@crewdle/web-sdk": "^0.2.2",
+    "@crewdle/mist-connector-in-memory-db": "^1.0.2",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.4",
+    "@crewdle/mist-connector-webrtc-node": "^1.0.9",
+    "@crewdle/web-sdk": "^0.2.3",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
     "keytar": "^7.9.0",
-    "node-datachannel": "https://github.com/murat-dogan/node-datachannel",
+    "node-datachannel": "^0.7.0",
     "systeminformation": "^5.22.6",
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.1"
