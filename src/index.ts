@@ -120,12 +120,20 @@ async function loadSDK(): Promise<void> {
       const memory = await si.mem();
       const gpu = await si.graphics();
       const storage = await si.fsSize();
+      const interfaces = await si.networkInterfaces();
+      let macAddress = '';
+      if (interfaces instanceof Array) {
+        macAddress = interfaces.find((i) => i.default === true)?.mac ?? '';
+      } else {
+        macAddress = interfaces.mac;
+      }
       let gpuCores = gpu.controllers[0].cores ?? 1;
       if (typeof gpuCores === 'string') {
         gpuCores = parseInt(gpuCores, 10);
       }
 
       const agentCapacity: IAgentCapacity = {
+        macAddress,
         cpu: {
           cores: cpu.cores,
           load: currentLoad.currentLoad,
