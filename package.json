@@ -105,7 +105,7 @@
     }
   },
   "devDependencies": {
-    "@crewdle/web-sdk-types": "^1.0.7",
+    "@crewdle/web-sdk-types": "^1.0.8",
     "@electron/notarize": "^2.3.0",
     "@electron/rebuild": "^3.6.0",
     "@types/semver": "^7.5.8",
@@ -122,7 +122,7 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-virtual-fs": "^1.0.4",
     "@crewdle/mist-connector-webrtc-node": "^1.0.9",
-    "@crewdle/web-sdk": "^0.2.3",
+    "@crewdle/web-sdk": "^0.2.4",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
