@@ -9,6 +9,8 @@ import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 
+import packageJson from '../package.json';
+
 import { SDK } from '@crewdle/web-sdk';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
@@ -133,6 +135,7 @@ async function loadSDK(): Promise<void> {
       }
 
       const agentCapacity: IAgentCapacity = {
+        version: packageJson.version,
         macAddress,
         cpu: {
           cores: cpu.cores,
