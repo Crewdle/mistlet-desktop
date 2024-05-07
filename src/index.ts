@@ -111,58 +111,72 @@ async function loadSDK(): Promise<void> {
   }
   log.info('Agent authenticating', uuid);
   
-  let user: IAuthAgent;
+  let agent: IAuthAgent;
   try {
-    user = await sdk.authenticateAgent({
+    agent = await sdk.authenticateAgent({
       groupId: config.agentId,
       id: uuid,
-    }, async () => {
-      const cpu = await si.cpu();
-      const currentLoad = await si.currentLoad();
-      const memory = await si.mem();
-      const gpu = await si.graphics();
-      const storage = await si.fsSize();
-      const interfaces = await si.networkInterfaces();
-      let macAddress = '';
-      if (interfaces instanceof Array) {
-        macAddress = interfaces.find((i) => i.default === true)?.mac ?? '';
-      } else {
-        macAddress = interfaces.mac;
-      }
-      let gpuCores = gpu.controllers[0].cores ?? 1;
-      if (typeof gpuCores === 'string') {
-        gpuCores = parseInt(gpuCores, 10);
-      }
-
-      const agentCapacity: IAgentCapacity = {
-        version: packageJson.version,
-        macAddress,
-        cpu: {
-          cores: cpu.cores,
-          load: currentLoad.currentLoad,
-        },
-        gpu: {
-          cores: gpuCores,
-          load: gpu.controllers[0].utilizationGpu ?? 0,
-        },
-        memory: {
-          total: memory.total,
-          available: memory.available,
-        },
-        storage: {
-          total: storage[0].size,
-          available: storage[0].available,
-        },
-      };
-
-      log.info('Reporting agent capacity', agentCapacity);
-      return agentCapacity;
     });
+
+    agent.setReportCapacity(reportCapacity);
+    agent.onConfigurationChange(restartAgent);
+
     log.info('Agent authenticated successfully');
   } catch (err) {
     log.error('Error authenticating agent', err);
     return;
   }
+}
+
+async function restartAgent(): Promise<void> {
+  log.info('New configuration, restarting agent');
+  if (sdk) {
+    await sdk.close();
+  }
+  await loadSDK();
+}
+
+async function reportCapacity(): Promise<IAgentCapacity> {
+  const cpu = await si.cpu();
+  const currentLoad = await si.currentLoad();
+  const memory = await si.mem();
+  const gpu = await si.graphics();
+  const storage = await si.fsSize();
+  const interfaces = await si.networkInterfaces();
+  let macAddress = '';
+  if (interfaces instanceof Array) {
+    macAddress = interfaces.find((i) => i.default === true)?.mac ?? '';
+  } else {
+    macAddress = interfaces.mac;
+  }
+  let gpuCores = gpu.controllers[0].cores ?? 1;
+  if (typeof gpuCores === 'string') {
+    gpuCores = parseInt(gpuCores, 10);
+  }
+
+  const agentCapacity: IAgentCapacity = {
+    version: packageJson.version,
+    macAddress,
+    cpu: {
+      cores: cpu.cores,
+      load: currentLoad.currentLoad,
+    },
+    gpu: {
+      cores: gpuCores,
+      load: gpu.controllers[0].utilizationGpu ?? 0,
+    },
+    memory: {
+      total: memory.total,
+      available: memory.available,
+    },
+    storage: {
+      total: storage[0].size,
+      available: storage[0].available,
+    },
+  };
+
+  log.info('Reporting agent capacity', agentCapacity);
+  return agentCapacity;
 }
 
 function saveConfig(newConfig: Config) {
