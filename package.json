@@ -1,6 +1,6 @@
 {
   "name": "@crewdle/mist-agent-desktop",
-  "version": "1.0.0",
+  "version": "1.0.0-rc1",
   "description": "The Crewdle Mist Desktop Agent",
   "main": "src/index.js",
   "scripts": {
@@ -126,6 +126,7 @@
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
+    "firebase": "^10.11.1",
     "keytar": "^7.9.0",
     "node-datachannel": "^0.7.0",
     "systeminformation": "^5.22.6",

@@ -4,6 +4,8 @@ import si from 'systeminformation';
 import keytar from 'keytar';
 import crypto from 'crypto';
 import { v4 } from 'uuid';
+import { getApp } from 'firebase/app';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
@@ -20,9 +22,16 @@ import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
 
+console.log = log.info;
+console.warn = log.warn;
+console.error = log.error;
+
 const configPath = path.join(app.getPath('userData'), 'config.json');
 const algorithm = 'aes-256-gcm';
 const iv = crypto.randomBytes(16);
+
+const firebase = getApp();
+const functions = getFunctions(firebase, 'northamerica-northeast1');
 
 let tray: Tray | null = null;
 let configWindow: BrowserWindow | null = null;
@@ -34,7 +43,7 @@ interface Config {
   vendorId: string;
   accessToken: string;
   secretKey: string;
-  agentId: string;
+  groupId: string;
 }
 
 interface EncryptedConfig {
@@ -44,9 +53,7 @@ interface EncryptedConfig {
 }
 
 function createConfigWindow(): void {
-  if (configWindow) {
-    return;
-  }
+  configWindow?.close();
 
   configWindow = new BrowserWindow({
     width: 400,
@@ -70,7 +77,7 @@ function createTray(): void {
     const iconPath = path.join(__dirname, 'assets/logo16x16.png');
     tray = new Tray(iconPath);
     const contextMenu = Menu.buildFromTemplate([
-      { label: 'Crewdle Mistlet', enabled: false},
+      { label: `Crewdle Mistlet v${packageJson.version}`, enabled: false},
       { type: 'separator'},
       { label: 'Configurations', click: createConfigWindow },
       { type: 'separator' },
@@ -100,6 +107,7 @@ async function loadSDK(): Promise<void> {
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
+    createConfigWindow();
     return;
   }
   log.info('SDK initialized successfully');
@@ -114,7 +122,7 @@ async function loadSDK(): Promise<void> {
   let agent: IAuthAgent;
   try {
     agent = await sdk.authenticateAgent({
-      groupId: config.agentId,
+      groupId: config.groupId,
       id: uuid,
     });
 
@@ -124,6 +132,7 @@ async function loadSDK(): Promise<void> {
     log.info('Agent authenticated successfully');
   } catch (err) {
     log.error('Error authenticating agent', err);
+    createConfigWindow();
     return;
   }
 }
@@ -179,8 +188,23 @@ async function reportCapacity(): Promise<IAgentCapacity> {
   return agentCapacity;
 }
 
-function saveConfig(newConfig: Config) {
-  const encryptedConfig = encrypt(JSON.stringify(newConfig));
+async function saveConfig(newConfig: Partial<Config>) {
+  if (!newConfig.vendorId || !newConfig.groupId) {
+    log.error('Invalid configuration data');
+    createConfigWindow();
+    return;
+  }
+
+  let completeConfig: Config | undefined;
+  try {
+    completeConfig = await retrieveConfig(newConfig.vendorId, newConfig.groupId);
+  } catch (err) {
+    log.error('Error loading config', err);
+    createConfigWindow();
+    return;
+  }
+
+  const encryptedConfig = encrypt(JSON.stringify(completeConfig));
   fs.writeFile(configPath, JSON.stringify(encryptedConfig), (err) => {
     if (err) {
       log.error('Error writing config file', err);
@@ -189,7 +213,7 @@ function saveConfig(newConfig: Config) {
     }
   });
 
-  config = newConfig;
+  config = completeConfig;
   if (sdk) {
     sdk.close();
   }
@@ -216,17 +240,55 @@ async function loadConfig() {
     const decryptedConfig = decrypt(encryptedConfig);
     config = JSON.parse(decryptedConfig);
   } catch (err) {
-    log.error('Error reading config file', err);
-    config = null;
-    createConfigWindow();
-    return null;
+    const vendorId = process.env.CREWDLE_VENDOR_ID;
+    const groupId = process.env.CREWDLE_GROUP_ID;
+
+    if (!secretKey || !vendorId || !groupId) {
+      log.error('Error reading config file', err);
+      createConfigWindow();
+      return;
+    }
+
+    try {
+      await saveConfig({
+        vendorId,
+        groupId,
+      });
+    } catch (err) {
+      log.error('Error loading config', err);
+      createConfigWindow();
+      return;
+    }
   }
 
   log.info('Configuration loaded successfully');
 }
 
+async function retrieveConfig(vendorId: string, groupId: string): Promise<Config> {
+  if (!secretKey) {
+    throw new Error('Secret key not found');
+  }
+
+  const data = await httpsCallable(functions, 'sdkGetSecrets')({
+    vendorId,
+    groupId,
+    encryptionKey: secretKey.toString('hex'),
+  });
+  const { content, tag, iv } = data.data as any;
+
+  const decryptedConfig = decrypt({ content, tag, iv });
+
+  let newConfig: Config = {
+    vendorId,
+    groupId,
+    ...JSON.parse(decryptedConfig)
+  };
+
+  return newConfig;
+}
+
 app.whenReady().then(async () => {
-  log.info('Starting Crewdle Mistlet Desktop');
+  log.info(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
 
   autoUpdater.checkForUpdatesAndNotify();
 
