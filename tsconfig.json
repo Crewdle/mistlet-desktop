@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es6", // Depends on the Electron version you are targeting
+    "module": "commonjs",
+    "outDir": "./src", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of source files
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Allows default imports from modules with no default export
+    "resolveJsonModule": true, // Allow importing JSON files
+    "sourceMap": false, // Enable source maps for debugging
+    "lib": ["dom", "esnext"], // Include DOM and latest ECMAScript features
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default exports
+    "moduleResolution": "node" // Module resolution strategy
+  },
+  "include": ["src/**/*"], // Include all files in the src folder
+  "exclude": ["node_modules", "dist"] // Exclude node_modules and dist folders
+}

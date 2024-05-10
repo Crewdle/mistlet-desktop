@@ -1,0 +1,39 @@
+const path = require('path');
+
+module.exports = () => {
+  configs = {
+    entry: './src/index.ts',
+    target: 'electron-main',
+    devtool: false,
+    externals: {
+      'keytar': 'commonjs keytar',
+      '@crewdle/mist-connector-webrtc-node': 'commonjs @crewdle/mist-connector-webrtc-node',
+    },
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        },
+        {
+          test: /\.node$/,
+          loader: 'node-loader',
+        },
+      ],
+    },
+    resolve: {
+      extensions: ['.ts', '.js', '.node'],
+      modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    },
+    output: {
+      filename: 'index.js',
+      path: path.resolve(__dirname, 'src'),
+    },
+    optimization: {
+      minimize: false,
+    },
+  };
+
+  return configs;
+}

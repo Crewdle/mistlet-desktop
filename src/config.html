@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crewdle Mistlet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #18191A;
+      color: #d3d5dd;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      box-sizing: border-box;
+      background-color: #242526;
+      border: 1px solid #d3d5dd;
+      color: #d3d5dd;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #FF5322;
+      border-radius: 50px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Configurations</h1>
+  <form id="config-form">
+    <div class="form-group">
+      <label for="vendor-id">Vendor ID</label>
+      <input type="text" id="vendor-id" name="vendor-id">
+    </div>
+    <div class="form-group">
+      <label for="group-id">Group ID</label>
+      <input type="text" id="group-id" name="group-id">
+    </div>
+    <div class="form-group">
+      <label for="config-file">Upload configuration file</label>
+      <input type="file" id="config-file" name="config-file">
+    </div>
+    <button type="submit">Save</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.api.getConfigData().then((config) => {
+        if (config) {
+          document.getElementById('vendor-id').value = config.vendorId || '';
+          document.getElementById('group-id').value = config.groupId || '';
+        }
+      });
+    });
+
+    document.getElementById('config-file').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const data = JSON.parse(e.target.result);
+        document.getElementById('vendor-id').value = data.vendorId || '';
+        document.getElementById('group-id').value = data.groupId || '';
+      };
+
+      reader.readAsText(file);
+    });
+
+    document.getElementById('config-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const data = {
+        vendorId: document.getElementById('vendor-id').value,
+        groupId: document.getElementById('group-id').value
+      };
+
+      window.api.sendConfigData(data);
+    });
+  </script>
+</body>
+</html>

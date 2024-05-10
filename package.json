@@ -1,0 +1,136 @@
+{
+  "name": "@crewdle/mist-agent-desktop",
+  "version": "1.0.0-rc1",
+  "description": "The Crewdle Mist Desktop Agent",
+  "main": "src/index.js",
+  "scripts": {
+    "build-app": "webpack build --mode=production",
+    "build-package": "electron-builder build --win --mac --linux",
+    "rebuild": "electron-rebuild -f",
+    "serve": "electron ."
+  },
+  "postinstall": "electron-builder install-app-deps",
+  "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
+  "license": "ISC",
+  "build": {
+    "appId": "com.crewdle.mistlet",
+    "productName": "Crewdle Mistlet",
+    "copyright": "Copyright © 2024 Crewdle",
+    "beforePack": "./beforePack.js",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "src/assets/logo-256x256.ico"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "icon": "src/assets/logo-256x256.icns",
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "identity": "Technologies Crewdle Inc. (H6U877W956)",
+      "notarize": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "src/assets"
+    },
+    "dmg": {
+      "sign": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "files": [
+      "src/**/*.js",
+      "src/**/*.html",
+      "src/assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "./node_modules/keytar/build/Release/",
+        "to": "resources/",
+        "filter": [
+          "*.node"
+        ]
+      },
+      {
+        "from": "./node_modules/node-datachannel/build/Release/",
+        "to": "resources/",
+        "filter": [
+          "*.node"
+        ]
+      }
+    ],
+    "afterSign": "./notarize.js",
+    "publish": {
+      "provider": "github",
+      "repo": "Crewdle/mist-agent-desktop",
+      "owner": "vlamanna",
+      "private": true
+    }
+  },
+  "devDependencies": {
+    "@crewdle/web-sdk-types": "^1.0.10",
+    "@electron/notarize": "^2.3.0",
+    "@electron/rebuild": "^3.6.0",
+    "@types/semver": "^7.5.8",
+    "dotenv": "^16.4.5",
+    "electron": "^29.1.5",
+    "electron-builder": "^24.13.3",
+    "node-loader": "^2.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.2",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@crewdle/mist-connector-in-memory-db": "^1.0.2",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.4",
+    "@crewdle/mist-connector-webrtc-node": "^1.0.9",
+    "@crewdle/web-sdk": "^0.2.5",
+    "bufferutil": "^4.0.8",
+    "electron-log": "^5.1.2",
+    "electron-updater": "^6.1.8",
+    "firebase": "^10.11.1",
+    "keytar": "^7.9.0",
+    "node-datachannel": "^0.7.0",
+    "systeminformation": "^5.22.6",
+    "utf-8-validate": "^6.0.3",
+    "uuid": "^9.0.1"
+  }
+}
