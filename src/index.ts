@@ -79,7 +79,7 @@ function createTray(): void {
     const contextMenu = Menu.buildFromTemplate([
       { label: `Crewdle Mistlet v${packageJson.version}`, enabled: false},
       { type: 'separator'},
-      { label: 'Configurations', click: createConfigWindow },
+      { label: 'Configuration', click: createConfigWindow },
       { type: 'separator' },
       { label: 'Quit', role: 'quit' }
     ]);
