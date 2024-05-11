@@ -290,7 +290,9 @@ async function retrieveConfig(vendorId: string, groupId: string): Promise<Config
 app.whenReady().then(async () => {
   log.info(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
 
-  autoUpdater.checkForUpdatesAndNotify();
+  if (SDK.isProduction()) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 
   log.info('Creating tray');
   createTray();

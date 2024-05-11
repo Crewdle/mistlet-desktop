@@ -97,12 +97,14 @@
       }
     ],
     "afterSign": "./notarize.js",
-    "publish": {
-      "provider": "github",
-      "repo": "Crewdle/mist-agent-desktop",
-      "owner": "vlamanna",
-      "private": true
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Crewdle",
+        "repo": "mist-agent-desktop",
+        "releaseType": "draft"
+      }
+    ]
   },
   "devDependencies": {
     "@crewdle/web-sdk-types": "^1.0.10",
@@ -122,7 +124,7 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-virtual-fs": "^1.0.4",
     "@crewdle/mist-connector-webrtc-node": "^1.0.9",
-    "@crewdle/web-sdk": "^0.2.5",
+    "@crewdle/web-sdk": "^0.2.7",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
