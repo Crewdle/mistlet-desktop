@@ -1,11 +1,14 @@
 {
-  "name": "@crewdle/mist-agent-desktop",
-  "version": "1.0.0",
-  "description": "The Crewdle Mist Desktop Agent",
+  "name": "@crewdle/mistlet-desktop",
+  "version": "1.0.1-rc1",
+  "description": "The Crewdle Mistlet for Desktop",
   "main": "src/index.js",
   "scripts": {
     "build-app": "webpack build --mode=production",
-    "build-package": "electron-builder build --win --mac --linux",
+    "build-package": "rm -rf dist && electron-builder build --win --mac --linux",
+    "build-puplish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
+    "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk",
+    "prebuild-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f",
     "serve": "electron ."
   },
@@ -55,13 +58,6 @@
             "arm64",
             "x64"
           ]
-        },
-        {
-          "target": "deb",
-          "arch": [
-            "arm64",
-            "x64"
-          ]
         }
       ],
       "icon": "src/assets"
@@ -101,13 +97,13 @@
       {
         "provider": "github",
         "owner": "Crewdle",
-        "repo": "mist-agent-desktop",
+        "repo": "mistlet-desktop",
         "releaseType": "draft"
       }
     ]
   },
   "devDependencies": {
-    "@crewdle/web-sdk-types": "^1.0.10",
+    "@crewdle/web-sdk-types": "git@github.com:Crewdle/web-sdk-types.git#CA-2229-job-service",
     "@electron/notarize": "^2.3.0",
     "@electron/rebuild": "^3.6.0",
     "@types/semver": "^7.5.8",
@@ -123,16 +119,21 @@
   "dependencies": {
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-virtual-fs": "^1.0.4",
-    "@crewdle/mist-connector-webrtc-node": "^1.0.9",
+    "@crewdle/mist-connector-webrtc-node": "^1.0.10",
+    "@crewdle/mist-connector-faiss": "git@github.com:Crewdle/mist-connector-faiss#CA-2232-Faiss-Connector",
+    "@crewdle/mist-connector-llamacpp": "git@github.com:Crewdle/mist-connector-llamacpp#CA-2232-llamacpp-connector",
     "@crewdle/web-sdk": "^0.2.7",
     "bufferutil": "^4.0.8",
-    "electron-log": "^5.1.2",
+    "electron-log": "^5.1.4",
     "electron-updater": "^6.1.8",
-    "firebase": "^10.11.1",
+    "faiss-node": "^0.5.1",
+    "firebase": "^10.12.0",
     "keytar": "^7.9.0",
-    "node-datachannel": "^0.7.0",
-    "systeminformation": "^5.22.6",
-    "utf-8-validate": "^6.0.3",
+    "node-datachannel": "^0.9.0",
+    "node-llama-cpp": "^3.0.0-beta.22",
+    "pdfjs-dist": "^4.2.67",
+    "systeminformation": "^5.22.9",
+    "utf-8-validate": "^6.0.4",
     "uuid": "^9.0.1"
   }
 }

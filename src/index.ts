@@ -14,10 +14,12 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
+import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
-import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
+import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
+import { LlamacppGenerativeAIWorkerConnector } from '@crewdle/mist-connector-llamacpp';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -104,6 +106,8 @@ async function loadSDK(): Promise<void> {
       objectStoreConnector: getVirtualFSObjectStoreConnector({
         baseFolder: app.getPath('userData'),
       }),
+      vectorDatabaseConnector: FaissVectorDatabaseConnector,
+      generativeAIWorkerConnector: LlamacppGenerativeAIWorkerConnector,
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
