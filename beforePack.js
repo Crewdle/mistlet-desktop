@@ -2,7 +2,8 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 module.exports = async (context) => {
-  const nodeModulesPath = path.join(context.packager.projectDir, 'node_modules', 'node-datachannel');
+  const datachannelPath = path.join(context.packager.projectDir, 'node_modules', 'node-datachannel');
+  const faissPath = path.join(context.packager.projectDir, 'node_modules', 'faiss-node');
 
   console.log('Running prebuild-install for node-datachannel...');
   try {
@@ -10,7 +11,11 @@ module.exports = async (context) => {
     const arch = context.arch === 1 ? 'x64' : 'arm64'; // Default to x64 if the architecture is not defined
 
     execSync(`npx prebuild-install -r napi --platform=${platform} --arch=${arch}`, {
-      cwd: nodeModulesPath,
+      cwd: datachannelPath,
+      stdio: 'inherit' // This will output the command's output directly to the terminal
+    });
+    execSync(`npx prebuild-install -r napi --platform=${platform} --arch=${arch}`, {
+      cwd: faissPath,
       stdio: 'inherit' // This will output the command's output directly to the terminal
     });
     console.log('prebuild-install completed successfully.');

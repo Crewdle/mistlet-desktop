@@ -8,7 +8,8 @@
     "build-package": "rm -rf dist && electron-builder build --win --mac --linux",
     "build-puplish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
     "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk",
-    "prebuild-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
+    "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
+    "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f",
     "serve": "electron ."
   },
@@ -92,17 +93,17 @@
         ]
       },
       {
-        "from": "./node_modules/node-llama-cpp/build/Release/",
+        "from": "./node_modules/node-llama-cpp/llamaBins/",
         "to": "resources/",
         "filter": [
-          "*.node"
+          "**/*.*"
         ]
       },
       {
         "from": "./node_modules/faiss-node/build/Release/",
         "to": "resources/",
         "filter": [
-          "*.node"
+          "*.*"
         ]
       }
     ],
