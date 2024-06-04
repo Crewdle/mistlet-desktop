@@ -9,7 +9,6 @@ module.exports = () => {
       'keytar': 'commonjs keytar',
       '@crewdle/mist-connector-webrtc-node': 'commonjs @crewdle/mist-connector-webrtc-node',
       '@crewdle/mist-connector-faiss': 'commonjs @crewdle/mist-connector-faiss',
-      '@crewdle/mist-connector-llamacpp': 'commonjs @crewdle/mist-connector-llamacpp',
     },
     module: {
       rules: [

@@ -1,4 +1,5 @@
 import path from 'path';
+import https from 'follow-redirects/https';
 import fs from 'fs';
 import si from 'systeminformation';
 import keytar from 'keytar';
@@ -19,7 +20,6 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
-import { LlamacppGenerativeAIWorkerConnector } from '@crewdle/mist-connector-llamacpp';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -100,6 +100,18 @@ async function loadSDK(): Promise<void> {
   }
 
   try {
+    if (!fs.existsSync(path.join(app.getPath('userData'), 'models'))) {
+      fs.mkdirSync(path.join(app.getPath('userData'), 'models'), { recursive: true });
+    }
+    if (!fs.existsSync(path.join(app.getPath('userData'), 'models', 'similarity.gguf'))) {
+      await downloadFile('https://huggingface.co/leliuga/all-MiniLM-L12-v2-GGUF/resolve/main/all-MiniLM-L12-v2.F16.gguf', path.join(app.getPath('userData'), 'models', 'similarity.gguf'));
+    }
+    if (!fs.existsSync(path.join(app.getPath('userData'), 'models', 'llm.gguf'))) {
+      await downloadFile('https://huggingface.co/second-state/Phi-3-mini-4k-instruct-GGUF/resolve/main/Phi-3-mini-4k-instruct-Q4_K_M.gguf', path.join(app.getPath('userData'), 'models', 'llm.gguf'));
+    }
+
+    const { getLlamacppGenerativeAIWorkerConnector } = await import('@crewdle/mist-connector-llamacpp');
+
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
       keyValueDatabaseConnector: InMemoryDatabaseConnector,
@@ -107,7 +119,10 @@ async function loadSDK(): Promise<void> {
         baseFolder: app.getPath('userData'),
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
-      generativeAIWorkerConnector: LlamacppGenerativeAIWorkerConnector,
+      generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector({
+        llmPath: path.join(app.getPath('userData'), 'models/llm.gguf'),
+        similarityPath: path.join(app.getPath('userData'), 'models/similarity.gguf'),
+      }),
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
@@ -290,6 +305,26 @@ async function retrieveConfig(vendorId: string, groupId: string): Promise<Config
 
   return newConfig;
 }
+
+async function downloadFile(url: string, dest: string) {
+  await new Promise<void>((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+    https.get(url, (response) => {
+      response.pipe(file);
+
+      file.on('finish', () => {
+        file.close(() => {
+          console.log('Download completed!');
+          resolve();
+        });
+      });
+    }).on('error', (err) => {
+      fs.unlink(dest, () => {}); // Delete the file async if there's an error
+      console.error(`Error downloading the file: ${err.message}`);
+      reject(err);
+    });
+  });
+};
 
 app.whenReady().then(async () => {
   log.info(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
