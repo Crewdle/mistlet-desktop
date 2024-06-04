@@ -118,7 +118,7 @@
     ]
   },
   "devDependencies": {
-    "@crewdle/web-sdk-types": "git@github.com:Crewdle/web-sdk-types.git#CA-2230-upload-models",
+    "@crewdle/web-sdk-types": "^1.0.12",
     "@electron/notarize": "^2.3.0",
     "@electron/rebuild": "^3.6.0",
     "@types/follow-redirects": "^1.14.4",
@@ -133,12 +133,12 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-faiss": "git@github.com:Crewdle/mist-connector-faiss#CA-2232-Faiss-Connector",
+    "@crewdle/mist-connector-faiss": "^1.0.0",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
-    "@crewdle/mist-connector-llamacpp": "git@github.com:Crewdle/mist-connector-llamacpp#CA-2232-llamacpp-connector",
-    "@crewdle/mist-connector-virtual-fs": "git@github.com:Crewdle/mist-connector-virtual-fs",
+    "@crewdle/mist-connector-llamacpp": "^1.0.0",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.5",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
-    "@crewdle/web-sdk": "^0.2.7",
+    "@crewdle/web-sdk": "^0.3.0",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.4",
     "electron-updater": "^6.1.8",
