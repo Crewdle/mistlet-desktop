@@ -1,6 +1,6 @@
 {
   "name": "@crewdle/mistlet-desktop",
-  "version": "1.0.1-rc2",
+  "version": "1.0.1-rc3",
   "description": "The Crewdle Mistlet for Desktop",
   "main": "src/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
-    "rebuild": "electron-rebuild -f",
+    "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
     "serve": "electron ."
   },
   "postinstall": "electron-builder install-app-deps",
@@ -70,6 +70,9 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
+    "asarUnpack": [
+      "node_modules/node-llama-cpp/**/*"
+    ],
     "files": [
       "src/**/*.js",
       "src/**/*.html",
@@ -90,13 +93,6 @@
         "to": "resources/",
         "filter": [
           "*.node"
-        ]
-      },
-      {
-        "from": "./node_modules/node-llama-cpp/llamaBins/",
-        "to": "resources/",
-        "filter": [
-          "**/*.*"
         ]
       },
       {
@@ -133,9 +129,9 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-faiss": "^1.0.0",
+    "@crewdle/mist-connector-faiss": "^1.0.1",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
-    "@crewdle/mist-connector-llamacpp": "^1.0.0",
+    "@crewdle/mist-connector-llamacpp": "^1.0.2",
     "@crewdle/mist-connector-virtual-fs": "^1.0.5",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
     "@crewdle/web-sdk": "^0.3.0",

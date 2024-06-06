@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6", // Depends on the Electron version you are targeting
+    "target": "ES2020", // Depends on the Electron version you are targeting
     "module": "commonjs",
     "outDir": "./src", // Output directory for compiled files
     "rootDir": "./src", // Root directory of source files

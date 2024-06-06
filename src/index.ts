@@ -110,7 +110,7 @@ async function loadSDK(): Promise<void> {
       await downloadFile('https://huggingface.co/second-state/Phi-3-mini-4k-instruct-GGUF/resolve/main/Phi-3-mini-4k-instruct-Q4_K_M.gguf', path.join(app.getPath('userData'), 'models', 'llm.gguf'));
     }
 
-    const { getLlamacppGenerativeAIWorkerConnector } = await import('@crewdle/mist-connector-llamacpp');
+    const { getLlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
