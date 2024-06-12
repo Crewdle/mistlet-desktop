@@ -177,7 +177,7 @@ async function reportCapacity(): Promise<IAgentCapacity> {
   } else {
     macAddress = interfaces.mac;
   }
-  let gpuCores = gpu.controllers[0].cores ?? 1;
+  let gpuCores = gpu.controllers[0]?.cores ?? 1;
   if (typeof gpuCores === 'string') {
     gpuCores = parseInt(gpuCores, 10);
   }
@@ -191,15 +191,15 @@ async function reportCapacity(): Promise<IAgentCapacity> {
     },
     gpu: {
       cores: gpuCores,
-      load: gpu.controllers[0].utilizationGpu ?? 0,
+      load: gpu.controllers[0]?.utilizationGpu ?? 0,
     },
     memory: {
       total: memory.total,
       available: memory.available,
     },
     storage: {
-      total: storage[0].size,
-      available: storage[0].available,
+      total: storage[0]?.size,
+      available: storage[0]?.available,
     },
   };
 
