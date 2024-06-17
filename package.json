@@ -8,6 +8,8 @@
     "build-package": "rm -rf dist && electron-builder build --win --mac --linux",
     "build-puplish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
     "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk && cp -r ../web-sdk-types/dist ./node_modules/@crewdle/web-sdk-types",
+    "copy-llamacpp": "cp -r ../mist-connector-llamacpp/dist node_modules/@crewdle/mist-connector-llamacpp",
+    "copy-faiss": "cp -r ../mist-connector-faiss/dist node_modules/@crewdle/mist-connector-faiss",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
