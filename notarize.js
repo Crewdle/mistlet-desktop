@@ -3,11 +3,11 @@ const { notarize } = require('@electron/notarize');
 
 exports.default = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
+  const appName = context.packager.appInfo.productFilename;
+
   if (electronPlatformName !== 'darwin') {
     return;
   }
-
-  const appName = context.packager.appInfo.productFilename;
 
   await notarize({
     appBundleId: 'com.crewdle.mistlet',
