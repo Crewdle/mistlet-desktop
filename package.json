@@ -1,13 +1,14 @@
 {
   "name": "@crewdle/mistlet-desktop",
-  "version": "1.0.1-rc4",
+  "version": "1.0.1",
   "description": "The Crewdle Mistlet for Desktop",
   "main": "src/index.js",
   "scripts": {
     "build-app": "webpack build --mode=production",
     "build-package": "rm -rf dist && electron-builder build --win --mac --linux",
     "build-puplish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
-    "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk && cp -r ../web-sdk-types/dist ./node_modules/@crewdle/web-sdk-types",
+    "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk",
+    "copy-sdk-types": "cp -r ../web-sdk-types/dist ./node_modules/@crewdle/web-sdk-types",
     "copy-llamacpp": "cp -r ../mist-connector-llamacpp/dist node_modules/@crewdle/mist-connector-llamacpp",
     "copy-faiss": "cp -r ../mist-connector-faiss/dist node_modules/@crewdle/mist-connector-faiss",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
@@ -23,6 +24,7 @@
     "productName": "Crewdle Mistlet",
     "copyright": "Copyright © 2024 Crewdle",
     "beforePack": "./beforePack.js",
+    "afterAllArtifactBuild": "./afterAllArtifactBuild.js",
     "win": {
       "target": [
         {
@@ -116,38 +118,38 @@
     ]
   },
   "devDependencies": {
-    "@electron/notarize": "^2.3.0",
+    "@electron/notarize": "^2.3.2",
     "@electron/rebuild": "^3.6.0",
     "@types/follow-redirects": "^1.14.4",
     "@types/semver": "^7.5.8",
     "dotenv": "^16.4.5",
-    "electron": "^29.1.5",
+    "electron": "^31.1.0",
     "electron-builder": "^24.13.3",
     "node-loader": "^2.0.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.4.2",
-    "webpack": "^5.91.0",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-faiss": "^1.0.3",
+    "@crewdle/mist-connector-faiss": "^1.0.4",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
-    "@crewdle/mist-connector-llamacpp": "^1.0.7",
+    "@crewdle/mist-connector-llamacpp": "^1.0.8",
     "@crewdle/mist-connector-virtual-fs": "^1.0.6",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
-    "@crewdle/web-sdk": "^0.3.2",
+    "@crewdle/web-sdk": "^0.3.3",
     "bufferutil": "^4.0.8",
-    "electron-log": "^5.1.4",
-    "electron-updater": "^6.1.8",
+    "electron-log": "^5.1.5",
+    "electron-updater": "^6.2.1",
     "faiss-node": "^0.5.1",
-    "firebase": "^10.12.0",
+    "firebase": "^10.12.2",
     "follow-redirects": "^1.15.6",
     "keytar": "^7.9.0",
-    "node-datachannel": "^0.9.0",
-    "node-llama-cpp": "^3.0.0-beta.27",
-    "pdfjs-dist": "^4.2.67",
-    "systeminformation": "^5.22.9",
+    "node-datachannel": "^0.9.2",
+    "node-llama-cpp": "^3.0.0-beta.32",
+    "pdfjs-dist": "^4.3.136",
+    "systeminformation": "^5.22.11",
     "utf-8-validate": "^6.0.4",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   }
 }
