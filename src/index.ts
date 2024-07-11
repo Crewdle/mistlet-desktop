@@ -137,7 +137,7 @@ async function loadSDK(): Promise<void> {
     await keytar.setPassword('crewdle', 'mist-agent-desktop-uuid', uuid);
   }
   log.info('Agent authenticating', uuid);
-  
+
   let agent: IAuthAgent;
   try {
     agent = await sdk.authenticateAgent({

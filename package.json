@@ -15,7 +15,12 @@
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
-    "serve": "electron ."
+    "serve": "electron .",
+
+    "restart-app": "pgrep -f electron | xargs kill && npm run serve",
+
+    "virtual-fs": "cd ../mist-connector-virtual-fs && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-virtual-fs/dist",
+    "llamacpp": "cd ../mist-connector-llamacpp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-llamacpp/dist"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -29,6 +34,7 @@
     "win": {
       "target": [
         {
+
           "target": "nsis",
           "arch": [
             "x64"
