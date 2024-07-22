@@ -15,7 +15,7 @@
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
-    "serve": "electron ."
+    "serve": "electron . --trace-warnings"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -121,7 +121,6 @@
   "devDependencies": {
     "@electron/notarize": "^2.3.2",
     "@electron/rebuild": "^3.6.0",
-    "@types/follow-redirects": "^1.14.4",
     "@types/semver": "^7.5.8",
     "dotenv": "^16.4.5",
     "electron": "^31.1.0",
@@ -144,10 +143,9 @@
     "electron-updater": "^6.2.1",
     "faiss-node": "^0.5.1",
     "firebase": "^10.12.3",
-    "follow-redirects": "^1.15.6",
     "keytar": "^7.9.0",
     "node-datachannel": "^0.10.1",
-    "node-llama-cpp": "^3.0.0-beta.37",
+    "node-llama-cpp": "^3.0.0-beta.38",
     "systeminformation": "^5.22.11",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0"
