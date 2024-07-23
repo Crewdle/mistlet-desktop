@@ -31,7 +31,7 @@ const configPath = path.join(app.getPath('userData'), 'config.json');
 const algorithm = 'aes-256-gcm';
 const iv = crypto.randomBytes(16);
 
-const firebase = getApp();
+const firebase = getApp('CREWDLE_WEB_SDK');
 const functions = getFunctions(firebase, 'northamerica-northeast1');
 
 let tray: Tray | null = null;
