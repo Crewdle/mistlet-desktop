@@ -39,6 +39,8 @@ let configWindow: BrowserWindow | null = null;
 let config: Config | null = null;
 let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
+let unsubReporting: (() => void) | null = null;
+let unsubConfig: (() => void) | null = null;
 
 interface Config {
   vendorId: string;
@@ -131,8 +133,8 @@ async function loadSDK(): Promise<void> {
       id: uuid,
     });
 
-    agent.setReportCapacity(reportCapacity);
-    agent.onConfigurationChange(restartAgent);
+    unsubReporting = agent.setReportCapacity(reportCapacity);
+    unsubConfig = agent.onConfigurationChange(restartAgent);
 
     log.info('Agent authenticated successfully');
   } catch (err) {
@@ -144,10 +146,20 @@ async function loadSDK(): Promise<void> {
 
 async function restartAgent(): Promise<void> {
   log.info('New configuration, restarting agent');
+  await closeSDK();
+  await loadSDK();
+}
+
+async function closeSDK(): Promise<void> {
+  if (unsubReporting) {
+    unsubReporting();
+  }
+  if (unsubConfig) {
+    unsubConfig();
+  }
   if (sdk) {
     await sdk.close();
   }
-  await loadSDK();
 }
 
 async function reportCapacity(): Promise<IAgentCapacity> {
@@ -219,10 +231,8 @@ async function saveConfig(newConfig: Partial<Config>) {
   });
 
   config = completeConfig;
-  if (sdk) {
-    sdk.close();
-  }
-  loadSDK();
+  await closeSDK();
+  await loadSDK();
   configWindow?.close();
 }
 
