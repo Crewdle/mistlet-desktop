@@ -19,6 +19,8 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
+import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
+import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -111,6 +113,8 @@ async function loadSDK(): Promise<void> {
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
       generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector(),
+      documentParserConnector: OfficeParserConnector,
+      nlpLibraryConnector: WinkNLPConnector,
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
