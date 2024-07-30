@@ -19,6 +19,7 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
+import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 
@@ -112,6 +113,7 @@ async function loadSDK(): Promise<void> {
         baseFolder: app.getPath('userData'),
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
+      graphDatabaseConnector: GraphologyGraphDatabaseConnector,
       generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector(),
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
