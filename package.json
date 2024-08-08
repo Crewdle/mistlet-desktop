@@ -15,12 +15,8 @@
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
-    "serve": "electron .",
-
-    "restart-app": "pgrep -f electron | xargs kill && npm run serve",
-
-    "virtual-fs": "cd ../mist-connector-virtual-fs && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-virtual-fs/dist",
-    "llamacpp": "cd ../mist-connector-llamacpp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-llamacpp/dist"
+    "serve": "electron . --trace-warnings",
+    "restart-app": "pgrep -f electron | xargs kill && npm run serve"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -34,7 +30,6 @@
     "win": {
       "target": [
         {
-
           "target": "nsis",
           "arch": [
             "x64"
@@ -127,7 +122,6 @@
   "devDependencies": {
     "@electron/notarize": "^2.3.2",
     "@electron/rebuild": "^3.6.0",
-    "@types/follow-redirects": "^1.14.4",
     "@types/semver": "^7.5.8",
     "dotenv": "^16.4.5",
     "electron": "^31.1.0",
@@ -139,21 +133,23 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@crewdle/mist-connector-faiss": "^1.0.4",
+    "@crewdle/mist-connector-faiss": "^1.0.5",
+    "@crewdle/mist-connector-graphology": "^1.0.2",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
-    "@crewdle/mist-connector-llamacpp": "^1.0.8",
-    "@crewdle/mist-connector-virtual-fs": "^1.0.8",
+    "@crewdle/mist-connector-llamacpp": "^1.0.9",
+    "@crewdle/mist-connector-officeparser": "^1.0.0",
+    "@crewdle/mist-connector-virtual-fs": "^1.0.9",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
-    "@crewdle/web-sdk": "^0.3.4",
+    "@crewdle/mist-connector-wink-nlp": "^1.0.2",
+    "@crewdle/web-sdk": "^0.3.5",
     "bufferutil": "^4.0.8",
     "electron-log": "^5.1.5",
     "electron-updater": "^6.2.1",
     "faiss-node": "^0.5.1",
     "firebase": "^10.12.3",
-    "follow-redirects": "^1.15.6",
     "keytar": "^7.9.0",
-    "node-datachannel": "^0.10.1",
-    "node-llama-cpp": "^3.0.0-beta.37",
+    "node-datachannel": "^0.11.0",
+    "node-llama-cpp": "^3.0.0-beta.41",
     "systeminformation": "^5.22.11",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0"

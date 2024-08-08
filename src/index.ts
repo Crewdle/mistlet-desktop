@@ -1,5 +1,4 @@
 import path from 'path';
-import https from 'follow-redirects/https';
 import fs from 'fs';
 import si from 'systeminformation';
 import keytar from 'keytar';
@@ -20,6 +19,9 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
+import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
+import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
+import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -32,7 +34,7 @@ const configPath = path.join(app.getPath('userData'), 'config.json');
 const algorithm = 'aes-256-gcm';
 const iv = crypto.randomBytes(16);
 
-const firebase = getApp();
+const firebase = getApp('CREWDLE_WEB_SDK');
 const functions = getFunctions(firebase, 'northamerica-northeast1');
 
 let tray: Tray | null = null;
@@ -40,6 +42,8 @@ let configWindow: BrowserWindow | null = null;
 let config: Config | null = null;
 let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
+let unsubReporting: (() => void) | null = null;
+let unsubConfig: (() => void) | null = null;
 
 interface Config {
   vendorId: string;
@@ -100,16 +104,6 @@ async function loadSDK(): Promise<void> {
   }
 
   try {
-    if (!fs.existsSync(path.join(app.getPath('userData'), 'models'))) {
-      fs.mkdirSync(path.join(app.getPath('userData'), 'models'), { recursive: true });
-    }
-    if (!fs.existsSync(path.join(app.getPath('userData'), 'models', 'similarity.gguf'))) {
-      await downloadFile('https://huggingface.co/leliuga/all-MiniLM-L12-v2-GGUF/resolve/main/all-MiniLM-L12-v2.F16.gguf', path.join(app.getPath('userData'), 'models', 'similarity.gguf'));
-    }
-    if (!fs.existsSync(path.join(app.getPath('userData'), 'models', 'llm.gguf'))) {
-      await downloadFile('https://huggingface.co/second-state/Phi-3-mini-4k-instruct-GGUF/resolve/main/Phi-3-mini-4k-instruct-Q4_K_M.gguf', path.join(app.getPath('userData'), 'models', 'llm.gguf'));
-    }
-
     const { getLlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
@@ -119,10 +113,10 @@ async function loadSDK(): Promise<void> {
         baseFolder: app.getPath('userData'),
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
-      generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector({
-        llmPath: path.join(app.getPath('userData'), 'models/llm.gguf'),
-        similarityPath: path.join(app.getPath('userData'), 'models/similarity.gguf'),
-      }),
+      graphDatabaseConnector: GraphologyGraphDatabaseConnector,
+      generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector(),
+      documentParserConnector: OfficeParserConnector,
+      nlpLibraryConnector: WinkNLPConnector,
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
@@ -145,8 +139,8 @@ async function loadSDK(): Promise<void> {
       id: uuid,
     });
 
-    agent.setReportCapacity(reportCapacity);
-    agent.onConfigurationChange(restartAgent);
+    unsubReporting = agent.setReportCapacity(reportCapacity);
+    unsubConfig = agent.onConfigurationChange(restartAgent);
 
     log.info('Agent authenticated successfully');
   } catch (err) {
@@ -158,10 +152,20 @@ async function loadSDK(): Promise<void> {
 
 async function restartAgent(): Promise<void> {
   log.info('New configuration, restarting agent');
+  await closeSDK();
+  await loadSDK();
+}
+
+async function closeSDK(): Promise<void> {
+  if (unsubReporting) {
+    unsubReporting();
+  }
+  if (unsubConfig) {
+    unsubConfig();
+  }
   if (sdk) {
     await sdk.close();
   }
-  await loadSDK();
 }
 
 async function reportCapacity(): Promise<IAgentCapacity> {
@@ -233,10 +237,8 @@ async function saveConfig(newConfig: Partial<Config>) {
   });
 
   config = completeConfig;
-  if (sdk) {
-    sdk.close();
-  }
-  loadSDK();
+  await closeSDK();
+  await loadSDK();
   configWindow?.close();
 }
 
@@ -305,26 +307,6 @@ async function retrieveConfig(vendorId: string, groupId: string): Promise<Config
 
   return newConfig;
 }
-
-async function downloadFile(url: string, dest: string) {
-  await new Promise<void>((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
-    https.get(url, (response) => {
-      response.pipe(file);
-
-      file.on('finish', () => {
-        file.close(() => {
-          console.log('Download completed!');
-          resolve();
-        });
-      });
-    }).on('error', (err) => {
-      fs.unlink(dest, () => {}); // Delete the file async if there's an error
-      console.error(`Error downloading the file: ${err.message}`);
-      reject(err);
-    });
-  });
-};
 
 app.whenReady().then(async () => {
   log.info(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
