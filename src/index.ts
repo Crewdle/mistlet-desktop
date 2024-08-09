@@ -390,3 +390,7 @@ autoUpdater.on('update-downloaded', () => {
   console.log('Update downloaded; will install now');
   autoUpdater.quitAndInstall();
 });
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});

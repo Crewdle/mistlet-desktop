@@ -7,6 +7,7 @@ module.exports = () => {
     devtool: false,
     externals: {
       'keytar': 'commonjs keytar',
+      'officeparser': 'commonjs officeparser',
       '@crewdle/mist-connector-webrtc-node': 'commonjs @crewdle/mist-connector-webrtc-node',
       '@crewdle/mist-connector-faiss': 'commonjs @crewdle/mist-connector-faiss',
     },
