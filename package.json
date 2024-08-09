@@ -17,13 +17,10 @@
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
     "serve": "electron . --trace-warnings",
-
     "restart-app": "pgrep -f electron | xargs kill && npm run serve",
-
     "virtual-fs": "cd ../mist-connector-virtual-fs && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-virtual-fs/dist",
     "llamacpp": "cd ../mist-connector-llamacpp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-llamacpp/dist",
     "faiss": "cd ../mist-connector-faiss && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-faiss/dist"
-
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -144,7 +141,7 @@
     "@crewdle/mist-connector-graphology": "^1.0.2",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-llamacpp": "^1.0.9",
-    "@crewdle/mist-connector-officeparser": "^1.0.0",
+    "@crewdle/mist-connector-officeparser": "^1.0.1",
     "@crewdle/mist-connector-virtual-fs": "^1.0.9",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
     "@crewdle/mist-connector-wink-nlp": "^1.0.2",
