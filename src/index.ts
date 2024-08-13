@@ -44,6 +44,7 @@ let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
 let unsubReporting: (() => void) | null = null;
 let unsubConfig: (() => void) | null = null;
+let getVramState: (() => { total: number, available: number }) | null = null;
 
 interface Config {
   vendorId: string;
@@ -104,7 +105,8 @@ async function loadSDK(): Promise<void> {
   }
 
   try {
-    const { getLlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
+    const { LlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
+    getVramState = LlamacppGenerativeAIWorkerConnector.getVramState;
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
@@ -114,7 +116,7 @@ async function loadSDK(): Promise<void> {
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
       graphDatabaseConnector: GraphologyGraphDatabaseConnector,
-      generativeAIWorkerConnector: getLlamacppGenerativeAIWorkerConnector(),
+      generativeAIWorkerConnector: LlamacppGenerativeAIWorkerConnector,
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
     }, config.secretKey);
@@ -181,9 +183,19 @@ async function reportCapacity(): Promise<IAgentCapacity> {
   } else {
     macAddress = interfaces.mac;
   }
-  let gpuCores = gpu.controllers[0]?.cores ?? 1;
+  let gpuCores = 0;
+  if (gpu.controllers instanceof Array) {
+    gpuCores = gpu.controllers[0]?.cores ?? 1;
+  }
   if (typeof gpuCores === 'string') {
     gpuCores = parseInt(gpuCores, 10);
+  }
+  let totalVram = 0;
+  let availableVram = 0;
+  if (getVramState) {
+    const vramState = getVramState();
+    totalVram = vramState.total ?? gpu.controllers[0]?.vramDynamic ? memory.total : 0;
+    availableVram = vramState.available ?? gpu.controllers[0]?.vramDynamic ? memory.available : 0;
   }
 
   const agentCapacity: IAgentCapacity = {
@@ -200,6 +212,10 @@ async function reportCapacity(): Promise<IAgentCapacity> {
     memory: {
       total: memory.total,
       available: memory.available,
+    },
+    vram: {
+      total: totalVram,
+      available: availableVram,
     },
     storage: {
       total: storage[0]?.size,

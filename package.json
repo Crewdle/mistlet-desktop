@@ -153,8 +153,8 @@
     "firebase": "^10.12.3",
     "keytar": "^7.9.0",
     "node-datachannel": "^0.11.0",
-    "node-llama-cpp": "^3.0.0-beta.41",
-    "systeminformation": "^5.22.11",
+    "node-llama-cpp": "^3.0.0-beta.44",
+    "systeminformation": "^5.23.4",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0"
   }
