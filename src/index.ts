@@ -116,7 +116,7 @@ async function loadSDK(): Promise<void> {
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
       graphDatabaseConnector: GraphologyGraphDatabaseConnector,
-      generativeAIWorkerConnector: LlamacppGenerativeAIWorkerConnector,
+      generativeAIWorkerConnectors: [LlamacppGenerativeAIWorkerConnector],
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
     }, config.secretKey);

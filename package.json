@@ -13,6 +13,8 @@
     "copy-faiss": "cp -r ../mist-connector-faiss/dist node_modules/@crewdle/mist-connector-faiss",
     "copy-virtual-fs": "cp -r ../mist-connector-virtual-fs/dist node_modules/@crewdle/mist-connector-virtual-fs",
     "copy-officeparser": "cp -r ../mist-connector-officeparser/dist node_modules/@crewdle/mist-connector-officeparser",
+    "copy-wink-nlp": "cp -r ../mist-connector-wink-nlp/dist node_modules/@crewdle/mist-connector-wink-nlp",
+    "copy-graphology": "cp -r ../mist-connector-graphology/dist node_modules/@crewdle/mist-connector-graphology",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
