@@ -106,6 +106,7 @@ async function loadSDK(): Promise<void> {
 
   try {
     const { LlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
+    const { TransformersGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-transformers")')();
     getVramState = LlamacppGenerativeAIWorkerConnector.getVramState;
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
@@ -116,7 +117,10 @@ async function loadSDK(): Promise<void> {
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
       graphDatabaseConnector: GraphologyGraphDatabaseConnector,
-      generativeAIWorkerConnectors: [LlamacppGenerativeAIWorkerConnector],
+      generativeAIWorkerConnectors: [
+        LlamacppGenerativeAIWorkerConnector,
+        TransformersGenerativeAIWorkerConnector,
+      ],
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
     }, config.secretKey);
