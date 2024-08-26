@@ -142,6 +142,7 @@
   },
   "dependencies": {
     "@crewdle/mist-connector-faiss": "^1.0.5",
+    "@crewdle/mist-connector-googleapis": "^1.0.0",
     "@crewdle/mist-connector-graphology": "^1.0.2",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-llamacpp": "^1.0.9",
@@ -157,6 +158,7 @@
     "electron-updater": "^6.2.1",
     "faiss-node": "^0.5.1",
     "firebase": "^10.12.3",
+    "googleapis": "^142.0.0",
     "keytar": "^7.9.0",
     "node-datachannel": "^0.11.0",
     "node-llama-cpp": "^3.0.0-beta.44",

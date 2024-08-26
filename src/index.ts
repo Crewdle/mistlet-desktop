@@ -22,6 +22,7 @@ import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
+import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -123,6 +124,7 @@ async function loadSDK(): Promise<void> {
       ],
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
+      searchConnector: GoogleSearchConnector,
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
