@@ -1,6 +1,6 @@
 {
   "name": "@crewdle/mistlet-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The Crewdle Mistlet for Desktop",
   "main": "src/index.js",
   "scripts": {
@@ -146,7 +146,7 @@
     "@crewdle/mist-connector-graphology": "^1.0.2",
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-llamacpp": "^1.0.9",
-    "@crewdle/mist-connector-officeparser": "^1.0.1",
+    "@crewdle/mist-connector-officeparser": "^1.0.2",
     "@crewdle/mist-connector-transformers": "^1.0.0",
     "@crewdle/mist-connector-virtual-fs": "^1.0.9",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
