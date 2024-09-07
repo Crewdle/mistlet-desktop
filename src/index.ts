@@ -45,7 +45,7 @@ let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
 let unsubReporting: (() => void) | null = null;
 let unsubConfig: (() => void) | null = null;
-let getVramState: (() => { total: number, available: number }) | null = null;
+let getVramState: (() => Promise<{ total: number, available: number }>) | null = null;
 
 interface Config {
   vendorId: string;
@@ -191,7 +191,9 @@ async function reportCapacity(): Promise<IAgentCapacity> {
   }
   let gpuCores = 0;
   if (gpu.controllers instanceof Array) {
-    gpuCores = gpu.controllers[0]?.cores ?? 1;
+    if (gpu.controllers[0]) {
+      gpuCores = gpu.controllers[0].cores ?? 1;
+    }
   }
   if (typeof gpuCores === 'string') {
     gpuCores = parseInt(gpuCores, 10);
@@ -199,9 +201,9 @@ async function reportCapacity(): Promise<IAgentCapacity> {
   let totalVram = 0;
   let availableVram = 0;
   if (getVramState) {
-    const vramState = getVramState();
-    totalVram = vramState.total ?? gpu.controllers[0]?.vramDynamic ? memory.total : 0;
-    availableVram = vramState.available ?? gpu.controllers[0]?.vramDynamic ? memory.available : 0;
+    const vramState = await getVramState();
+    totalVram = vramState.total ?? (gpu.controllers[0]?.vramDynamic ? memory.total : 0);
+    availableVram = vramState.available ?? (gpu.controllers[0]?.vramDynamic ? memory.available : 0);
   }
 
   const agentCapacity: IAgentCapacity = {
