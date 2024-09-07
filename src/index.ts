@@ -204,6 +204,10 @@ async function reportCapacity(): Promise<IAgentCapacity> {
     const vramState = await getVramState();
     totalVram = vramState.total ?? (gpu.controllers[0]?.vramDynamic ? memory.total : 0);
     availableVram = vramState.available ?? (gpu.controllers[0]?.vramDynamic ? memory.available : 0);
+
+    if (totalVram > 0 && gpuCores === 0) {
+      gpuCores = 1;
+    }
   }
 
   const agentCapacity: IAgentCapacity = {
