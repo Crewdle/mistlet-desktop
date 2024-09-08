@@ -15,14 +15,15 @@ import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
 import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
-import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
-import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
-import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
-import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
-import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
-import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
+import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
+import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
+import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
+import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite-db'
+import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
+import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
+import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -114,6 +115,9 @@ async function loadSDK(): Promise<void> {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
       keyValueDatabaseConnector: InMemoryDatabaseConnector,
       objectStoreConnector: getVirtualFSObjectStoreConnector({
+        baseFolder: app.getPath('userData'),
+      }),
+      loggingDatabaseConnector: getSQLiteDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
       vectorDatabaseConnector: FaissVectorDatabaseConnector,
