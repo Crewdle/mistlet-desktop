@@ -18,7 +18,8 @@
     "copy-transformers": "cp -r ../mist-connector-transformers/dist node_modules/@crewdle/mist-connector-transformers",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
-    "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
+    "prebuild-sqlite": "cd ./node_modules/sqlite3 && ((prebuild-install -r napi --platform=darwin --arch=arm64) || node-gyp rebuild) && mkdir -p ../../build/Release && cp build/Release/node_sqlite3.node ../../build/Release/node_sqlite3.node",
+    "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg && npm run prebuild-sqlite",
     "serve": "electron . --trace-warnings",
     "restart-app": "pgrep -f electron | xargs kill && npm run serve",
     "virtual-fs": "cd ../mist-connector-virtual-fs && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-virtual-fs/dist",
@@ -168,6 +169,8 @@
     "keytar": "^7.9.0",
     "node-datachannel": "^0.11.0",
     "node-llama-cpp": "^3.0.0-beta.44",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "systeminformation": "^5.23.4",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0"
