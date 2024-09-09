@@ -18,7 +18,7 @@
     "copy-transformers": "cp -r ../mist-connector-transformers/dist node_modules/@crewdle/mist-connector-transformers",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
-    "prebuild-sqlite": "cd ./node_modules/sqlite3 && ((prebuild-install -r napi --platform=darwin --arch=arm64) || node-gyp rebuild) && mkdir -p ../../build/Release && cp build/Release/node_sqlite3.node ../../build/Release/node_sqlite3.node",
+    "prebuild-sqlite": "cd ./node_modules/sqlite3 && prebuild-install -r napi --platform=darwin --arch=arm64",
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg && npm run prebuild-sqlite",
     "serve": "electron . --trace-warnings",
     "restart-app": "pgrep -f electron | xargs kill && npm run serve",
@@ -117,6 +117,13 @@
       },
       {
         "from": "./node_modules/faiss-node/build/Release/",
+        "to": "resources/",
+        "filter": [
+          "*.*"
+        ]
+      },
+      {
+        "from": "./node_modules/sqlite3/build/Release/",
         "to": "resources/",
         "filter": [
           "*.*"
