@@ -1,6 +1,6 @@
 {
   "name": "@crewdle/mistlet-desktop",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "The Crewdle Mistlet for Desktop",
   "main": "src/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg && npm run prebuild-sqlite",
     "serve": "electron . --trace-warnings",
     "restart-app": "pgrep -f electron | xargs kill && npm run serve",
+    "serve-debug": "DEBUG=electron* npm run serve",
     "virtual-fs": "cd ../mist-connector-virtual-fs && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-virtual-fs/dist",
     "llamacpp": "cd ../mist-connector-llamacpp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-llamacpp/dist",
     "faiss": "cd ../mist-connector-faiss && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-faiss/dist",
@@ -29,7 +30,8 @@
     "wink": "cd ../mist-connector-wink-nlp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-wink-nlp/dist",
     "graphology": "cd ../mist-connector-graphology && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-graphology/dist",
     "transformers": "cd ../mist-connector-transformers && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-transformers/dist",
-    "in-memory": "cd ../mist-connector-in-memory-db && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-in-memory-db/dist"
+    "in-memory": "cd ../mist-connector-in-memory-db && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-in-memory-db/dist",
+    "sqlite": "cd ../mist-connector-sqlite && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-sqlite-db/dist"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -145,7 +147,7 @@
     "@electron/rebuild": "^3.6.0",
     "@types/semver": "^7.5.8",
     "dotenv": "^16.4.5",
-    "electron": "^31.1.0",
+    "electron": "^32.0.0",
     "electron-builder": "^24.13.3",
     "node-loader": "^2.0.0",
     "ts-loader": "^9.5.1",
@@ -160,7 +162,7 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.2",
     "@crewdle/mist-connector-llamacpp": "^1.0.10",
     "@crewdle/mist-connector-officeparser": "^1.0.5",
-    "@crewdle/mist-connector-sqlite-db": "^0.0.2",
+    "@crewdle/mist-connector-sqlite": "^0.0.4",
     "@crewdle/mist-connector-transformers": "^1.0.2",
     "@crewdle/mist-connector-virtual-fs": "^1.0.9",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
