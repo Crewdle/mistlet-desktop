@@ -159,7 +159,7 @@
     "@crewdle/mist-connector-faiss": "^1.0.7",
     "@crewdle/mist-connector-googleapis": "^1.0.0",
     "@crewdle/mist-connector-graphology": "^1.0.4",
-    "@crewdle/mist-connector-in-memory-db": "^1.0.2",
+    "@crewdle/mist-connector-in-memory-db": "^1.0.3",
     "@crewdle/mist-connector-llamacpp": "^1.0.10",
     "@crewdle/mist-connector-officeparser": "^1.0.5",
     "@crewdle/mist-connector-sqlite": "^0.0.4",
