@@ -7,3 +7,4 @@ data.enc/
 dist/
 Mistlet-*/
 .env
+build/
