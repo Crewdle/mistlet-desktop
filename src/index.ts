@@ -20,7 +20,7 @@ import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
 import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
-import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite-db'
+import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';

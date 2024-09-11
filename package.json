@@ -31,7 +31,7 @@
     "graphology": "cd ../mist-connector-graphology && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-graphology/dist",
     "transformers": "cd ../mist-connector-transformers && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-transformers/dist",
     "in-memory": "cd ../mist-connector-in-memory-db && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-in-memory-db/dist",
-    "sqlite": "cd ../mist-connector-sqlite && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-sqlite-db/dist"
+    "sqlite": "cd ../mist-connector-sqlite && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-sqlite/dist"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
