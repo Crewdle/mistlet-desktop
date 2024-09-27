@@ -40,8 +40,14 @@
     "appId": "com.crewdle.mistlet",
     "productName": "Crewdle Mistlet",
     "copyright": "Copyright © 2024 Crewdle",
+    "npmRebuild": false,
     "beforePack": "./beforePack.js",
     "afterAllArtifactBuild": "./afterAllArtifactBuild.js",
+    "extraMetadata": {
+      "excludeDependencies": [
+        "sqlite3"
+      ]
+    },
     "win": {
       "target": [
         {
