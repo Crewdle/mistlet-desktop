@@ -16,6 +16,7 @@
     "copy-wink-nlp": "cp -r ../mist-connector-wink-nlp/dist node_modules/@crewdle/mist-connector-wink-nlp",
     "copy-graphology": "cp -r ../mist-connector-graphology/dist node_modules/@crewdle/mist-connector-graphology",
     "copy-transformers": "cp -r ../mist-connector-transformers/dist node_modules/@crewdle/mist-connector-transformers",
+    "copy-sharepoint": "cp -r ../mist-connector-sharepoint/dist node_modules/@crewdle/mist-connector-sharepoint",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-sqlite": "cd ./node_modules/sqlite3 && prebuild-install -r napi --platform=darwin --arch=arm64",
