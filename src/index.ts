@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
-import { IAgentCapacity, IAuthAgent } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent, ExternalStorageType } from '@crewdle/web-sdk-types';
 import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
 import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
@@ -24,6 +24,7 @@ import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
+import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -129,6 +130,9 @@ async function loadSDK(): Promise<void> {
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
+      externalStorageConnectors: new Map([
+        [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
+      ])
     }, config.secretKey);
   } catch (err) {
     log.error('Error initializing SDK', err);
