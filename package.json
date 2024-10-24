@@ -6,7 +6,7 @@
   "scripts": {
     "build-app": "webpack build --mode=production",
     "build-package": "rm -rf dist && electron-builder build --win --mac --linux",
-    "build-puplish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
+    "build-publish": "rm -rf dist && electron-builder build --win --mac --linux --publish always",
     "copy-sdk": "cp -r ../web-sdk-internal/dist ./node_modules/@crewdle/web-sdk",
     "copy-sdk-types": "cp -r ../web-sdk-types/dist ./node_modules/@crewdle/web-sdk-types",
     "copy-llamacpp": "cp -r ../mist-connector-llamacpp/dist node_modules/@crewdle/mist-connector-llamacpp",
