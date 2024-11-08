@@ -15,9 +15,9 @@ import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
 import { IAgentCapacity, IAuthAgent, ExternalStorageType } from '@crewdle/web-sdk-types';
-import { FaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
+import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
-import { GraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
+import { getGraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
@@ -121,8 +121,12 @@ async function loadSDK(): Promise<void> {
       loggingDatabaseConnector: getSQLiteDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
-      vectorDatabaseConnector: FaissVectorDatabaseConnector,
-      graphDatabaseConnector: GraphologyGraphDatabaseConnector,
+      vectorDatabaseConnector: getFaissVectorDatabaseConnector({
+        baseFolder: app.getPath('userData'),
+      }),
+      graphDatabaseConnector: getGraphologyGraphDatabaseConnector({
+        baseFolder: app.getPath('userData'),
+      }),
       generativeAIWorkerConnectors: [
         LlamacppGenerativeAIWorkerConnector,
         TransformersGenerativeAIWorkerConnector,
