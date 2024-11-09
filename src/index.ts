@@ -14,17 +14,18 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
-import { IAgentCapacity, IAuthAgent, ExternalStorageType } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType } from '@crewdle/web-sdk-types';
+
 import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
 import { getGraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
+import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
 import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
-import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -112,7 +113,7 @@ async function loadSDK(): Promise<void> {
     const { TransformersGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-transformers")')();
     getVramState = LlamacppGenerativeAIWorkerConnector.getVramState;
 
-    sdk = await SDK.getInstance(config.vendorId, config.accessToken, {
+    sdk = await SDK.getInstance(config.vendorId, config.accessToken, NodeType.Agent, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
       keyValueDatabaseConnector: InMemoryDatabaseConnector,
       objectStoreConnector: getVirtualFSObjectStoreConnector({
