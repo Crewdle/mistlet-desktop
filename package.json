@@ -39,7 +39,8 @@
   "license": "ISC",
   "build": {
     "appId": "com.crewdle.mistlet",
-    "productName": "Crewdle Mistlet",
+    "productName": "CrewdleMistlet",
+    "artifactName": "${productName}-${os}-${arch}.${ext}",
     "copyright": "Copyright © 2024 Crewdle",
     "npmRebuild": false,
     "beforePack": "./beforePack.js",
