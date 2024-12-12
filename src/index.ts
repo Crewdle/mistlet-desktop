@@ -26,6 +26,7 @@ import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
+import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
@@ -135,6 +136,7 @@ async function loadSDK(): Promise<void> {
       documentParserConnector: OfficeParserConnector,
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
+      aiSearchConnector: PerplexitySearchConnector,
       externalStorageConnectors: new Map([
         [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
       ])
