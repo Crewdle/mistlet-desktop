@@ -177,7 +177,7 @@
     "@crewdle/mist-connector-in-memory-db": "^1.0.3",
     "@crewdle/mist-connector-llamacpp": "^1.0.20",
     "@crewdle/mist-connector-officeparser": "^1.0.5",
-    "@crewdle/mist-connector-perplexity": "^1.0.1",
+    "@crewdle/mist-connector-perplexity": "^1.0.5",
     "@crewdle/mist-connector-sharepoint": "^1.0.1",
     "@crewdle/mist-connector-sqlite": "^1.0.0",
     "@crewdle/mist-connector-transformers": "^1.0.3",
