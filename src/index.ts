@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import fs from 'fs';
 import si from 'systeminformation';
@@ -6,6 +7,7 @@ import crypto from 'crypto';
 import { v4 } from 'uuid';
 import { getApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import dotenv from 'dotenv';
 
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
@@ -27,13 +29,41 @@ import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtua
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
+import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
+import { createLogger, format, transports } from 'winston';
+
+dotenv.config();
 
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
 
-console.log = log.info;
-console.warn = log.warn;
-console.error = log.error;
+const httpTransportOptions = {
+  host: 'http-intake.logs.datadoghq.com',
+  path: `/api/v2/logs?dd-api-key=${process.env.DATA_DOG_API_KEY}&ddsource=nodejs&service=mistletdesktop&hostname=${os.hostname()}-${process.pid}`,
+  ssl: true
+};
+
+const logger = createLogger({
+  level: 'info',
+  exitOnError: false,
+  format: format.json(),
+  transports: [
+    new transports.Http(httpTransportOptions),
+  ],
+});
+
+console.log = (...args) => {
+  log.info(args);
+  logger.info(args.join(' '));
+};
+console.warn = (...args) => {
+  log.warn(args);
+  logger.warn(args.join(' '))
+};
+console.error = (...args) => {
+  log.error(args);
+  logger.error(args.join(' '))
+};
 
 const configPath = path.join(app.getPath('userData'), 'config.json');
 const algorithm = 'aes-256-gcm';
@@ -137,6 +167,7 @@ async function loadSDK(): Promise<void> {
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
+      queryFileConnector: AlaSqlQueryFileConnector,
       externalStorageConnectors: new Map([
         [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
       ])
