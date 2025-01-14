@@ -206,20 +206,8 @@ async function loadSDK(): Promise<void> {
 
 async function restartAgent(): Promise<void> {
   console.log('New configuration, restarting agent');
-  await closeSDK();
-  await loadSDK();
-}
-
-async function closeSDK(): Promise<void> {
-  if (unsubReporting) {
-    unsubReporting();
-  }
-  if (unsubConfig) {
-    unsubConfig();
-  }
-  if (sdk) {
-    await sdk.close();
-  }
+  app.relaunch();
+  app.exit(0);
 }
 
 async function reportCapacity(): Promise<IAgentCapacity> {
@@ -311,9 +299,9 @@ async function saveConfig(newConfig: Partial<Config>) {
   });
 
   config = completeConfig;
-  await closeSDK();
-  await loadSDK();
   configWindow?.close();
+  app.relaunch();
+  app.exit(0);
 }
 
 async function loadConfig() {
