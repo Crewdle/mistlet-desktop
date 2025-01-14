@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import { v4 } from 'uuid';
 import { getApp } from 'firebase/app';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import dotenv from 'dotenv';
+import { DATA_DOG_API_KEY } from './env';
 
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
@@ -22,7 +22,7 @@ import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
 import { getGraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-graphology';
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
-import { OfficeParserConnector } from '@crewdle/mist-connector-officeparser';
+import { getOfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
 import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
@@ -32,14 +32,12 @@ import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
 import { createLogger, format, transports } from 'winston';
 
-dotenv.config();
-
 log.transports.file.fileName = 'mistlet.log';
 log.transports.file.level = 'debug';
 
 const httpTransportOptions = {
   host: 'http-intake.logs.datadoghq.com',
-  path: `/api/v2/logs?dd-api-key=${process.env.DATA_DOG_API_KEY}&ddsource=nodejs&service=mistletdesktop&hostname=${os.hostname()}-${process.pid}`,
+  path: `/api/v2/logs?dd-api-key=${DATA_DOG_API_KEY}&ddsource=nodejs&service=mistletdesktop&hostname=${os.hostname()}-${process.pid}`,
   ssl: true
 };
 
@@ -129,13 +127,13 @@ function createTray(): void {
     tray.setToolTip('Crewdle Mist Agent');
     tray.setContextMenu(contextMenu);
   } catch (err) {
-    log.error('Error creating tray', err);
+    console.error('Error creating tray', err);
   }
 }
 
 async function loadSDK(): Promise<void> {
   if (!config) {
-    log.error('Configuration not found');
+    console.error('Configuration not found');
     return;
   }
 
@@ -163,7 +161,9 @@ async function loadSDK(): Promise<void> {
         LlamacppGenerativeAIWorkerConnector,
         TransformersGenerativeAIWorkerConnector,
       ],
-      documentParserConnector: OfficeParserConnector,
+      documentParserConnector: getOfficeParserConnector({
+        baseFolder: app.getPath('userData'),
+      }),
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
@@ -173,18 +173,18 @@ async function loadSDK(): Promise<void> {
       ])
     }, config.secretKey);
   } catch (err) {
-    log.error('Error initializing SDK', err);
+    console.error('Error initializing SDK', err);
     createConfigWindow();
     return;
   }
-  log.info('SDK initialized successfully');
+  console.log('SDK initialized successfully');
 
   let uuid = await keytar.getPassword('crewdle', 'mist-agent-desktop-uuid');
   if (!uuid) {
     uuid = v4();
     await keytar.setPassword('crewdle', 'mist-agent-desktop-uuid', uuid);
   }
-  log.info('Agent authenticating', uuid);
+  console.log('Agent authenticating', uuid);
 
   let agent: IAuthAgent;
   try {
@@ -196,16 +196,16 @@ async function loadSDK(): Promise<void> {
     unsubReporting = agent.setReportCapacity(reportCapacity);
     unsubConfig = agent.onConfigurationChange(restartAgent);
 
-    log.info('Agent authenticated successfully');
+    console.log('Agent authenticated successfully');
   } catch (err) {
-    log.error('Error authenticating agent', err);
+    console.error('Error authenticating agent', err);
     createConfigWindow();
     return;
   }
 }
 
 async function restartAgent(): Promise<void> {
-  log.info('New configuration, restarting agent');
+  console.log('New configuration, restarting agent');
   await closeSDK();
   await loadSDK();
 }
@@ -281,13 +281,13 @@ async function reportCapacity(): Promise<IAgentCapacity> {
     },
   };
 
-  log.info('Reporting agent capacity', agentCapacity);
+  console.log('Reporting agent capacity', agentCapacity);
   return agentCapacity;
 }
 
 async function saveConfig(newConfig: Partial<Config>) {
   if (!newConfig.vendorId || !newConfig.groupId) {
-    log.error('Invalid configuration data');
+    console.error('Invalid configuration data');
     createConfigWindow();
     return;
   }
@@ -296,7 +296,7 @@ async function saveConfig(newConfig: Partial<Config>) {
   try {
     completeConfig = await retrieveConfig(newConfig.vendorId, newConfig.groupId);
   } catch (err) {
-    log.error('Error loading config', err);
+    console.error('Error loading config', err);
     createConfigWindow();
     return;
   }
@@ -304,9 +304,9 @@ async function saveConfig(newConfig: Partial<Config>) {
   const encryptedConfig = encrypt(JSON.stringify(completeConfig));
   fs.writeFile(configPath, JSON.stringify(encryptedConfig), (err) => {
     if (err) {
-      log.error('Error writing config file', err);
+      console.error('Error writing config file', err);
     } else {
-      log.info('Configuration saved successfully');
+      console.log('Configuration saved successfully');
     }
   });
 
@@ -323,7 +323,7 @@ async function loadConfig() {
       secretKey = Buffer.from(keytarSecret, 'hex');
     }
   } catch (err) {
-    log.error('Error reading secret key from keytar', err);
+    console.error('Error reading secret key from keytar', err);
   }
 
   try {
@@ -339,7 +339,7 @@ async function loadConfig() {
     const groupId = process.env.CREWDLE_GROUP_ID;
 
     if (!secretKey || !vendorId || !groupId) {
-      log.error('Error reading config file', err);
+      console.error('Error reading config file', err);
       createConfigWindow();
       return;
     }
@@ -350,13 +350,13 @@ async function loadConfig() {
         groupId,
       });
     } catch (err) {
-      log.error('Error loading config', err);
+      console.error('Error loading config', err);
       createConfigWindow();
       return;
     }
   }
 
-  log.info('Configuration loaded successfully');
+  console.log('Configuration loaded successfully');
 }
 
 async function retrieveConfig(vendorId: string, groupId: string): Promise<Config> {
@@ -383,22 +383,25 @@ async function retrieveConfig(vendorId: string, groupId: string): Promise<Config
 }
 
 app.whenReady().then(async () => {
-  log.info(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
+  console.log(`Starting Crewdle Mistlet Desktop v${packageJson.version}`);
 
   if (SDK.isProduction()) {
     autoUpdater.checkForUpdatesAndNotify();
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 60 * 60 * 1000);
   }
 
-  log.info('Creating tray');
+  console.log('Creating tray');
   createTray();
   if (process.platform === 'darwin') {
     app.dock.hide();
   }
 
-  log.info('Loading configuration');
+  console.log('Loading configuration');
   await loadConfig();
 
-  log.info('Loading SDK');
+  console.log('Loading SDK');
   loadSDK();
 });
 
@@ -453,7 +456,7 @@ const decrypt = (encrypted: EncryptedConfig): string => {
 };
 
 process.on('uncaughtException', (error) => {
-  log.error('Unhandled Exception', error);
+  console.error('Unhandled Exception', error);
 });
 
 autoUpdater.on('update-available', () => {

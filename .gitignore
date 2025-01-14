@@ -8,3 +8,4 @@ dist/
 Mistlet-*/
 .env
 build/
+src/env.ts
