@@ -206,7 +206,9 @@ async function loadSDK(): Promise<void> {
 
 async function restartAgent(): Promise<void> {
   console.log('New configuration, restarting agent');
-  app.relaunch();
+  if (app.isPackaged) {
+    app.relaunch();
+  }
   app.exit(0);
 }
 
@@ -290,17 +292,13 @@ async function saveConfig(newConfig: Partial<Config>) {
   }
 
   const encryptedConfig = encrypt(JSON.stringify(completeConfig));
-  fs.writeFile(configPath, JSON.stringify(encryptedConfig), (err) => {
-    if (err) {
-      console.error('Error writing config file', err);
-    } else {
-      console.log('Configuration saved successfully');
-    }
-  });
+  fs.writeFileSync(configPath, JSON.stringify(encryptedConfig));
 
   config = completeConfig;
   configWindow?.close();
-  app.relaunch();
+  if (app.isPackaged) {
+    app.relaunch();
+  }
   app.exit(0);
 }
 
