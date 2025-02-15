@@ -24,7 +24,6 @@ import { getGraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-gra
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getOfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
-import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
@@ -75,8 +74,6 @@ let configWindow: BrowserWindow | null = null;
 let config: Config | null = null;
 let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
-let unsubReporting: (() => void) | null = null;
-let unsubConfig: (() => void) | null = null;
 let getVramState: (() => Promise<{ total: number, available: number }>) | null = null;
 
 interface Config {
@@ -148,9 +145,6 @@ async function loadSDK(): Promise<void> {
       objectStoreConnector: getVirtualFSObjectStoreConnector({
         baseFolder: app.getPath('userData'),
       }),
-      loggingDatabaseConnector: getSQLiteDatabaseConnector({
-        baseFolder: app.getPath('userData'),
-      }),
       vectorDatabaseConnector: getFaissVectorDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
@@ -193,8 +187,8 @@ async function loadSDK(): Promise<void> {
       id: uuid,
     });
 
-    unsubReporting = agent.setReportCapacity(reportCapacity);
-    unsubConfig = agent.onConfigurationChange(restartAgent);
+    agent.setReportCapacity(reportCapacity);
+    agent.onConfigurationChange(restartAgent);
 
     console.log('Agent authenticated successfully');
   } catch (err) {

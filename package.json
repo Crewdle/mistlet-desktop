@@ -20,8 +20,7 @@
     "copy-alasql": "cp -r ../mist-connector-alasql/dist node_modules/@crewdle/mist-connector-alasql",
     "prebuild-datachannel-stg": "cd ./node_modules/node-datachannel && prebuild-install -r napi --platform=darwin --arch=arm64",
     "prebuild-faiss-stg": "cd ./node_modules/faiss-node && prebuild-install -r napi --platform=darwin --arch=arm64",
-    "prebuild-sqlite": "cd ./node_modules/sqlite3 && prebuild-install -r napi --platform=darwin --arch=arm64",
-    "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg && npm run prebuild-sqlite",
+    "rebuild": "electron-rebuild -f && npm run prebuild-datachannel-stg && npm run prebuild-faiss-stg",
     "serve": "electron . --trace-warnings",
     "restart-app": "pgrep -f electron | xargs kill && npm run serve",
     "serve-debug": "DEBUG=electron* npm run serve",
@@ -32,8 +31,7 @@
     "wink": "cd ../mist-connector-wink-nlp && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-wink-nlp/dist",
     "graphology": "cd ../mist-connector-graphology && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-graphology/dist",
     "transformers": "cd ../mist-connector-transformers && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-transformers/dist",
-    "in-memory": "cd ../mist-connector-in-memory-db && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-in-memory-db/dist",
-    "sqlite": "cd ../mist-connector-sqlite && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-sqlite/dist"
+    "in-memory": "cd ../mist-connector-in-memory-db && npm run build && cp -r dist/* ../mistlet-desktop/node_modules/@crewdle/mist-connector-in-memory-db/dist"
   },
   "postinstall": "electron-builder install-app-deps",
   "author": "Vincent Lamanna <vincent@crewdle.com> (https://crewdle.com/)",
@@ -46,11 +44,6 @@
     "npmRebuild": false,
     "beforePack": "./beforePack.js",
     "afterAllArtifactBuild": "./afterAllArtifactBuild.js",
-    "extraMetadata": {
-      "excludeDependencies": [
-        "sqlite3"
-      ]
-    },
     "win": {
       "target": [
         {
@@ -139,13 +132,6 @@
         "filter": [
           "*.*"
         ]
-      },
-      {
-        "from": "./node_modules/sqlite3/build/Release/",
-        "to": "resources/",
-        "filter": [
-          "*.*"
-        ]
       }
     ],
     "afterSign": "./notarize.js",
@@ -181,7 +167,6 @@
     "@crewdle/mist-connector-officeparser": "^1.0.8",
     "@crewdle/mist-connector-perplexity": "^1.0.6",
     "@crewdle/mist-connector-sharepoint": "^1.0.1",
-    "@crewdle/mist-connector-sqlite": "^1.0.0",
     "@crewdle/mist-connector-transformers": "^1.0.3",
     "@crewdle/mist-connector-virtual-fs": "^1.0.9",
     "@crewdle/mist-connector-webrtc-node": "^1.0.10",
@@ -197,8 +182,6 @@
     "keytar": "^7.9.0",
     "node-datachannel": "^0.25.0",
     "node-llama-cpp": "^3.5.0",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
     "systeminformation": "^5.23.5",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0",
