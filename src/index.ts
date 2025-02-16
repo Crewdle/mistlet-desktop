@@ -135,9 +135,12 @@ async function loadSDK(): Promise<void> {
   }
 
   try {
-    const { LlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
+    const { getLlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
     const { TransformersGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-transformers")')();
-    getVramState = LlamacppGenerativeAIWorkerConnector.getVramState;
+    const connector = getLlamacppGenerativeAIWorkerConnector({
+      baseFolder: app.getPath('userData'),
+    });
+    getVramState = connector.getVramState;
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, NodeType.Agent, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
@@ -152,7 +155,7 @@ async function loadSDK(): Promise<void> {
         baseFolder: app.getPath('userData'),
       }),
       generativeAIWorkerConnectors: [
-        LlamacppGenerativeAIWorkerConnector,
+        connector,
         TransformersGenerativeAIWorkerConnector,
       ],
       documentParserConnector: getOfficeParserConnector({

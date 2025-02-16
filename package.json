@@ -178,6 +178,7 @@
     "electron-updater": "^6.3.9",
     "faiss-node": "^0.5.1",
     "firebase": "^10.14.0",
+    "follow-redirects": "^1.15.9",
     "googleapis": "^144.0.0",
     "keytar": "^7.9.0",
     "node-datachannel": "^0.25.0",
