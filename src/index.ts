@@ -29,6 +29,7 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
+import { PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
 import { createLogger, format, transports } from 'winston';
 
 log.transports.file.fileName = 'mistlet.log';
@@ -165,6 +166,7 @@ async function loadSDK(): Promise<void> {
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
       queryFileConnector: AlaSqlQueryFileConnector,
+      ragConnector: PineconeRAGConnector,
       externalStorageConnectors: new Map([
         [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
       ])
