@@ -16,7 +16,7 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
-import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType, GenerativeAIEngineType } from '@crewdle/web-sdk-types';
 
 import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
@@ -30,6 +30,7 @@ import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
 import { PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
+import { OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
 import { createLogger, format, transports } from 'winston';
 
 log.transports.file.fileName = 'mistlet.log';
@@ -155,10 +156,11 @@ async function loadSDK(): Promise<void> {
       graphDatabaseConnector: getGraphologyGraphDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
-      generativeAIWorkerConnectors: [
-        connector,
-        TransformersGenerativeAIWorkerConnector,
-      ],
+      generativeAIWorkerConnectors: new Map([
+        [GenerativeAIEngineType.Llamacpp, connector],
+        [GenerativeAIEngineType.Transformers, TransformersGenerativeAIWorkerConnector],
+        [GenerativeAIEngineType.OpenAI, OpenAIGenerativeAIWorkerConnector],
+      ]),
       documentParserConnector: getOfficeParserConnector({
         baseFolder: app.getPath('userData'),
       }),
