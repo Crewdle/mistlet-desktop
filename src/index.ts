@@ -30,7 +30,7 @@ import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
 import { PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
-import { OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
+import { OpenAIFileConnector, OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
 import { createLogger, format, transports } from 'winston';
 
 log.transports.file.fileName = 'mistlet.log';
@@ -164,6 +164,7 @@ async function loadSDK(): Promise<void> {
       documentParserConnector: getOfficeParserConnector({
         baseFolder: app.getPath('userData'),
       }),
+      fileConnector: OpenAIFileConnector,
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
