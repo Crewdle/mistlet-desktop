@@ -8,10 +8,8 @@ module.exports = () => {
     externals: {
       'keytar': 'commonjs keytar',
       'officeparser': 'commonjs officeparser',
-      'sqlite3': 'commonjs sqlite3',
       '@crewdle/mist-connector-webrtc-node': 'commonjs @crewdle/mist-connector-webrtc-node',
       '@crewdle/mist-connector-faiss': 'commonjs @crewdle/mist-connector-faiss',
-      '@crewdle/mist-connector-sqlite': 'commonjs @crewdle/mist-connector-sqlite',
       '@crewdle/mist-connector-alasql': 'commonjs @crewdle/mist-connector-alasql',
     },
     module: {

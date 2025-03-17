@@ -16,7 +16,7 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
-import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType, GenerativeAIEngineType } from '@crewdle/web-sdk-types';
 
 import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
@@ -24,12 +24,13 @@ import { getGraphologyGraphDatabaseConnector } from '@crewdle/mist-connector-gra
 import { InMemoryDatabaseConnector } from '@crewdle/mist-connector-in-memory-db';
 import { getOfficeParserConnector } from '@crewdle/mist-connector-officeparser';
 import { SharepointExternalStorageConnector } from '@crewdle/mist-connector-sharepoint';
-import { getSQLiteDatabaseConnector } from '@crewdle/mist-connector-sqlite'
 import { getVirtualFSObjectStoreConnector } from '@crewdle/mist-connector-virtual-fs';
 import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrtc-node';
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
+import { PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
+import { OpenAIFileConnector, OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
 import { createLogger, format, transports } from 'winston';
 
 log.transports.file.fileName = 'mistlet.log';
@@ -75,8 +76,6 @@ let configWindow: BrowserWindow | null = null;
 let config: Config | null = null;
 let sdk: SDK | null = null;
 let secretKey: Buffer | null = null;
-let unsubReporting: (() => void) | null = null;
-let unsubConfig: (() => void) | null = null;
 let getVramState: (() => Promise<{ total: number, available: number }>) | null = null;
 
 interface Config {
@@ -138,17 +137,17 @@ async function loadSDK(): Promise<void> {
   }
 
   try {
-    const { LlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
+    const { getLlamacppGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-llamacpp")')();
     const { TransformersGenerativeAIWorkerConnector } = await Function('return import("@crewdle/mist-connector-transformers")')();
-    getVramState = LlamacppGenerativeAIWorkerConnector.getVramState;
+    const connector = getLlamacppGenerativeAIWorkerConnector({
+      baseFolder: app.getPath('userData'),
+    });
+    getVramState = connector.getVramState;
 
     sdk = await SDK.getInstance(config.vendorId, config.accessToken, NodeType.Agent, {
       peerConnectionConnector: WebRTCNodePeerConnectionConnector,
       keyValueDatabaseConnector: InMemoryDatabaseConnector,
       objectStoreConnector: getVirtualFSObjectStoreConnector({
-        baseFolder: app.getPath('userData'),
-      }),
-      loggingDatabaseConnector: getSQLiteDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
       vectorDatabaseConnector: getFaissVectorDatabaseConnector({
@@ -157,17 +156,20 @@ async function loadSDK(): Promise<void> {
       graphDatabaseConnector: getGraphologyGraphDatabaseConnector({
         baseFolder: app.getPath('userData'),
       }),
-      generativeAIWorkerConnectors: [
-        LlamacppGenerativeAIWorkerConnector,
-        TransformersGenerativeAIWorkerConnector,
-      ],
+      generativeAIWorkerConnectors: new Map([
+        [GenerativeAIEngineType.Llamacpp, connector],
+        [GenerativeAIEngineType.Transformers, TransformersGenerativeAIWorkerConnector],
+        [GenerativeAIEngineType.OpenAI, OpenAIGenerativeAIWorkerConnector],
+      ]),
       documentParserConnector: getOfficeParserConnector({
         baseFolder: app.getPath('userData'),
       }),
+      fileConnector: OpenAIFileConnector,
       nlpLibraryConnector: WinkNLPConnector,
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
       queryFileConnector: AlaSqlQueryFileConnector,
+      ragConnector: PineconeRAGConnector,
       externalStorageConnectors: new Map([
         [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
       ])
@@ -193,8 +195,8 @@ async function loadSDK(): Promise<void> {
       id: uuid,
     });
 
-    unsubReporting = agent.setReportCapacity(reportCapacity);
-    unsubConfig = agent.onConfigurationChange(restartAgent);
+    agent.setReportCapacity(reportCapacity);
+    agent.onConfigurationChange(restartAgent);
 
     console.log('Agent authenticated successfully');
   } catch (err) {
