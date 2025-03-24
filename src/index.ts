@@ -16,7 +16,7 @@ import { autoUpdater } from 'electron-updater';
 import packageJson from '../package.json';
 
 import { SDK } from '@crewdle/web-sdk';
-import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType, GenerativeAIEngineType } from '@crewdle/web-sdk-types';
+import { IAgentCapacity, IAuthAgent, ExternalStorageType, NodeType, GenerativeAIEngineType, GenerativeAIRagType, GenerativeAIRagConnectorConstructor } from '@crewdle/web-sdk-types';
 
 import { getFaissVectorDatabaseConnector } from '@crewdle/mist-connector-faiss';
 import { GoogleSearchConnector } from '@crewdle/mist-connector-googleapis';
@@ -29,7 +29,7 @@ import { WebRTCNodePeerConnectionConnector } from '@crewdle/mist-connector-webrt
 import { WinkNLPConnector } from '@crewdle/mist-connector-wink-nlp';
 import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
-import { PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
+import { PineconeDBConnector, PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
 import { OpenAIFileConnector, OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
 import { createLogger, format, transports } from 'winston';
 
@@ -169,7 +169,10 @@ async function loadSDK(): Promise<void> {
       searchConnector: GoogleSearchConnector,
       aiSearchConnector: PerplexitySearchConnector,
       queryFileConnector: AlaSqlQueryFileConnector,
-      ragConnector: PineconeRAGConnector,
+      ragConnectors: new Map([
+        [GenerativeAIRagType.Pinecone, PineconeRAGConnector as GenerativeAIRagConnectorConstructor],
+        [GenerativeAIRagType.Crewdle, PineconeDBConnector as GenerativeAIRagConnectorConstructor],
+      ]),
       externalStorageConnectors: new Map([
         [ExternalStorageType.SharePoint, SharepointExternalStorageConnector],
       ])
