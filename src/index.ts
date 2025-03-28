@@ -31,6 +31,7 @@ import { PerplexitySearchConnector } from '@crewdle/mist-connector-perplexity';
 import { AlaSqlQueryFileConnector } from '@crewdle/mist-connector-alasql';
 import { PineconeDBConnector, PineconeRAGConnector } from '@crewdle/mist-connector-pinecone';
 import { OpenAIFileConnector, OpenAIGenerativeAIWorkerConnector } from '@crewdle/mist-connector-openai';
+import { AnthropicGenerativeAIWorkerConnector } from '@crewdle/mist-connector-anthropic';
 import { createLogger, format, transports } from 'winston';
 
 log.transports.file.fileName = 'mistlet.log';
@@ -160,6 +161,7 @@ async function loadSDK(): Promise<void> {
         [GenerativeAIEngineType.Llamacpp, connector],
         [GenerativeAIEngineType.Transformers, TransformersGenerativeAIWorkerConnector],
         [GenerativeAIEngineType.OpenAI, OpenAIGenerativeAIWorkerConnector],
+        [GenerativeAIEngineType.Anthropic, AnthropicGenerativeAIWorkerConnector],
       ]),
       documentParserConnector: getOfficeParserConnector({
         baseFolder: app.getPath('userData'),
